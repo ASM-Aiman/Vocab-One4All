@@ -1,0 +1,20 @@
+{
+	"geolocation": {
+		"data": {
+			"city": "Colombo",
+			"country": {
+				"code": "LK",
+				"name": "Sri Lanka"
+			},
+			"subdivision": {
+				"code": "1",
+				"name": "Western Province"
+			},
+			"timezone": "Asia/Colombo",
+			"latitude": 6.9318,
+			"longitude": 79.8863,
+			"postalCode": "10600"
+		},
+		"timestamp": 1769593883633
+	}
+}
