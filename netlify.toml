@@ -9,8 +9,9 @@
   publish = "public"
 
 [functions]
-  node_bundler = "esbuild"
   directory = "functions"
+  external_node_modules = ["@libsql/client"] 
+  node_bundler = "esbuild"
 
 [[redirects]]
   from = "/*"

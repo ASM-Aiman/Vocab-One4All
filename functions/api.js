@@ -1,4 +1,4 @@
-const { createClient } = require("@libsql/client");
+import { createClient } from '@libsql/client/web';
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
