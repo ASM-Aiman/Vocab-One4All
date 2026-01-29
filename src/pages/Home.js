@@ -27,12 +27,15 @@ export default function Home() {
     api.get('').then(res => setWords(res.data)).catch(err => console.error("Fetch error:", err));
   };
 
-  // --- LOGOUT LOGIC ---
+// --- LOGOUT LOGIC ---
   const handleLogout = () => {
     if (window.confirm("Logout of your archive?")) {
-      localStorage.removeItem('vocab-user-id'); // Or whatever key you use
-      navigate('/'); // Send them back to landing/login
-      window.location.reload(); // Hard refresh to clear state
+      // 1. Clear the 'token' because that's what App.js checks
+      localStorage.removeItem('token'); 
+      localStorage.removeItem('username');
+      
+      // 2. Redirect to Auth and force a reload to clear the React state
+      window.location.href = '/auth'; 
     }
   };
 
