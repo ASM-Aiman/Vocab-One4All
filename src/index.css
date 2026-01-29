@@ -57,31 +57,111 @@ body {
     background 0.2s;
 }
 
+.btn-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+/* Save Button */
+.btn-save {
+  background: #10b981; /* modern emerald */
+  color: white;
+  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.25);
+}
+
+.btn-save:hover {
+  background: #0ea371;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(16, 185, 129, 0.35);
+}
+
+/* Cancel Button */
+.btn-cancel {
+  background: #2a2a2a;
+  color: #e5e5e5;
+  border: 1px solid #3a3a3a;
+}
+
+.btn-cancel:hover {
+  background: #3a3a3a;
+  color: white;
+  transform: translateY(-1px);
+}
+
 .add-btn:hover {
   background: var(--primary-hover);
   transform: translateY(-2px);
 }
 
 .search-container {
-  margin-bottom: 40px;
+  position: relative;
+  width: 100%;
+  max-width: 600px; /* Limits width on desktop */
+  margin: 0 auto 40px auto; /* Centers the bar */
+}
+
+.search-icon-wrapper {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  pointer-events: none; /* Allows clicks to pass through to the input */
 }
 
 .search-input {
   width: 100%;
   background: var(--bg-card);
   border: 1px solid var(--border);
-  padding: 16px 20px;
+  padding: 14px 20px 14px 48px; /* Extra left padding for the icon */
   border-radius: 16px;
   color: white;
   font-size: 1rem;
   outline: none;
-  transition: border-color 0.3s;
+  transition: all 0.3s ease;
+  box-sizing: border-box; /* Crucial for mobile width calculation */
 }
 
 .search-input:focus {
   border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
 }
 
+/* Mobile Tweak */
+@media (max-width: 600px) {
+  .search-container {
+    margin-bottom: 30px;
+  }
+
+  .search-input {
+    font-size: 16px; /* Prevents iOS from zooming in on focus */
+    padding: 12px 16px 12px 42px;
+  }
+
+  .search-icon-wrapper {
+    left: 14px;
+  }
+}
 /* Card Grid */
 .word-grid {
   display: grid;
@@ -138,6 +218,12 @@ body {
   color: var(--accent-green);
 }
 
+.details-link {
+  text-decoration: none;
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
 .meaning-text {
   color: var(--text-muted);
   line-height: 1.6;
@@ -219,4 +305,43 @@ body {
   overflow-wrap: break-word;
   word-break: break-word; /* Prevents long words from stretching the card */
   max-width: 100%;
+}
+
+/* Update your existing header actions */
+.header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+/* Specific style for the Study Mode button to keep CSS clean */
+.study-mode-btn {
+  background: transparent !important;
+  border: 1px solid var(--primary) !important;
+  color: var(--primary) !important;
+}
+
+.study-mode-btn:hover {
+  background: rgba(99, 102, 241, 0.1) !important;
+}
+
+/* RESPONSIVE FIX */
+@media (max-width: 650px) {
+  .header {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    text-align: center;
+  }
+
+  .header-actions {
+    width: 100%;
+    flex-direction: column; /* Stacks buttons on top of each other */
+    gap: 10px;
+  }
+
+  .add-btn {
+    width: 100%; /* Buttons take full width of mobile screen */
+    justify-content: center;
+    box-sizing: border-box;
+  }
 }
