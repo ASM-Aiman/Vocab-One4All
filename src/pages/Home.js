@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api';
-import { Link } from 'react-router-dom';
-import { Trash2, Search, ChevronLeft, ChevronRight, Volume2, X, Target, CheckCircle, Flame } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom'; // Added useNavigate
+import { Trash2, Search, ChevronLeft, ChevronRight, Volume2, X, Target, CheckCircle, LogOut } from 'lucide-react';
 
 export default function Home() {
+  const navigate = useNavigate(); // For redirecting after logout
   const [words, setWords] = useState([]);
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState('All');
@@ -26,9 +27,17 @@ export default function Home() {
     api.get('').then(res => setWords(res.data)).catch(err => console.error("Fetch error:", err));
   };
 
+  // --- LOGOUT LOGIC ---
+  const handleLogout = () => {
+    if (window.confirm("Logout of your archive?")) {
+      localStorage.removeItem('vocab-user-id'); // Or whatever key you use
+      navigate('/'); // Send them back to landing/login
+      window.location.reload(); // Hard refresh to clear state
+    }
+  };
+
   // --- SRS LOGIC: Calculate next review date ---
   const handleSRSUpdate = async (word, performance) => {
-    // Easy = 4 days, Medium/Next = 2 days, Hard = 1 day
     let daysToAdd = performance === 'Easy' ? 4 : performance === 'Hard' ? 1 : 2;
     const nextDate = new Date();
     nextDate.setDate(nextDate.getDate() + daysToAdd);
@@ -44,10 +53,8 @@ export default function Home() {
   };
 
   const startReview = () => {
-    // Logic: Prioritize words where next_review_date <= now
     const now = new Date();
     const dueWords = words.filter(w => !w.next_review_date || new Date(w.next_review_date) <= now);
-    
     const listToReview = dueWords.length > 0 ? dueWords : words;
     if (listToReview.length === 0) return alert("Add some words first!");
     
@@ -88,7 +95,7 @@ export default function Home() {
 
   return (
     <div className="app-container">
-      {/* FLASHCARD OVERLAY WITH SRS BUTTONS */}
+      {/* FLASHCARD OVERLAY (Remains the same) */}
       {isReviewing && reviewWords.length > 0 && (
         <div style={{
           position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
@@ -133,10 +140,21 @@ export default function Home() {
         </div>
       )}
 
-      {/* DAILY GOAL TRACKER */}
+      {/* TOP NAVBAR (Logout Added Here) */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+        <h1 style={{ fontSize: '1.2rem', margin: 0 }}>One4All-Vocab</h1>
+        <button 
+          onClick={handleLogout} 
+          style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}
+        >
+          <LogOut size={18} /> Logout
+        </button>
+      </div>
+
+      {/* DAILY GOAL TRACKER (Remains same) */}
       <div style={{ background: 'var(--bg-card)', padding: '20px', borderRadius: '15px', marginBottom: '30px', border: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-          <div style={{ background: 'var(--bg-input)', p: '10px', borderRadius: '50%', display: 'flex', padding: '10px' }}>
+          <div style={{ background: 'var(--bg-input)', borderRadius: '50%', display: 'flex', padding: '10px' }}>
             <Target color="var(--primary)" size={24} />
           </div>
           <div>
@@ -156,7 +174,7 @@ export default function Home() {
       </div>
 
       <div className="header">
-        <h1>One4All-Vocab</h1>
+        <h1>Archives</h1>
         <div className="header-actions">
           <button onClick={startReview} className="add-btn study-mode-btn" style={{ background: 'var(--bg-input)', border: '1px solid var(--primary)', color: 'var(--primary)' }}>
             Study Due
@@ -191,7 +209,7 @@ export default function Home() {
         ))}
       </div>
 
-      {/* PAGINATION */}
+      {/* PAGINATION (Remains same) */}
       {filteredWords.length > wordsPerPage && (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '20px', marginTop: '40px', paddingBottom: '40px' }}>
           <button disabled={currentPage === 1} onClick={() => setCurrentPage(prev => prev - 1)} className="add-btn" style={{ opacity: currentPage === 1 ? 0.3 : 1 }}><ChevronLeft size={18} /></button>
