@@ -12,59 +12,42 @@ export default function WordForm() {
   const navigate = useNavigate();
 
   // Primary Fetch: Grabs Meaning + Example
-  const fetchDefinition = async () => {
-    if (!formData.word) {
-      setStatusMsg({ type: 'error', text: 'Type a word first!' });
-      return;
-    }
+// Replace your old fetchDefinition with this:
+const fetchDefinition = async () => {
+  if (!formData.word) {
+    setStatusMsg({ type: 'error', text: 'Type a word first!' });
+    return;
+  }
 
-    setLoading(true);
-    setStatusMsg({ type: '', text: '' });
+  setLoading(true);
+  setStatusMsg({ type: '', text: '' });
 
-    try {
-      // 1. Fetch from DataMuse (Meanings)
-      const dmRes = await fetch(`https://api.datamuse.com/words?sp=${formData.word}&md=d&max=1`);
-      const dmData = await dmRes.json();
+  try {
+    // We send a specific prompt to our /deconstruct endpoint
+    // to ensure Groq returns a JSON we can use for a single word
+    const response = await api.post('/deconstruct', { 
+      text: `Define the word "${formData.word}" and provide a creative example sentence.` 
+    });
+    
+    const data = response.data;
 
-      // 2. Fetch from DictionaryAPI (Examples)
-      const dictRes = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${formData.word}`);
-      const dictData = await dictRes.json();
+    // Use the 'explanation' for the meaning and 'variations.formal' for the example
+    setFormData(prev => ({
+      ...prev,
+      meaning: data.explanation || prev.meaning,
+      example_sentence: data.variations?.formal || prev.example_sentence
+    }));
+    
+    setStatusMsg({ type: 'success', text: 'AI generated definition!' });
 
-      let newMeaning = "";
-      let newExample = "";
-
-      if (dmData[0]?.defs) {
-        newMeaning = dmData[0].defs[0].split('\t')[1];
-      }
-
-      if (dictData[0]) {
-        for (const m of dictData[0].meanings) {
-          for (const d of m.definitions) {
-            if (d.example) { newExample = d.example; break; }
-          }
-          if (newExample) break;
-        }
-      }
-
-      if (!newMeaning && !newExample) {
-        setStatusMsg({ type: 'error', text: "Archives couldn't find this word." });
-      } else {
-        setFormData(prev => ({
-          ...prev,
-          meaning: newMeaning || prev.meaning,
-          example_sentence: newExample || prev.example_sentence
-        }));
-        setStatusMsg({ type: 'success', text: 'Definitions found!' });
-      }
-
-    } catch (err) {
-      setStatusMsg({ type: 'error', text: 'Connection to Archives failed.' });
-    } finally {
-      setLoading(false);
-      // Clear success message after 3 seconds
-      setTimeout(() => setStatusMsg({ type: '', text: '' }), 3000);
-    }
-  };
+  } catch (err) {
+    console.error("AI Fetch Error:", err);
+    setStatusMsg({ type: 'error', text: 'Groq failed to analyze.' });
+  } finally {
+    setLoading(false);
+    setTimeout(() => setStatusMsg({ type: '', text: '' }), 3000);
+  }
+};
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -104,7 +87,7 @@ export default function WordForm() {
               <button 
                 type="button" 
                 onClick={fetchDefinition} 
-                className="add-btn" 
+                className="neon-sparkle-btn" 
                 disabled={loading}
                 style={{ padding: '0 15px', background: 'var(--bg-input)', border: '1px solid var(--primary)', color: 'var(--primary)' }}
               >

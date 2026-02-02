@@ -1,37 +1,23 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import axios from '../api';
-import { ArrowLeft, Trash2, Edit3, Save, X, BookOpen } from 'lucide-react';
+import { ArrowLeft, Trash2, Edit3, Save, X, Sparkles, MessageCircle } from 'lucide-react';
 
 export default function WordDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [word, setWord] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [related, setRelated] = useState({ syn: [], ant: [] });
-  
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({});
+  
+  // New State for Deep Linking
+  const [aiUsage, setAiUsage] = useState(null);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   useEffect(() => {
     fetchWord();
   }, [id]);
-
-  // FETCH SYNONYMS AND ANTONYMS
-  useEffect(() => {
-    if (word?.word) {
-      const getRelated = async () => {
-        try {
-          const [sRes, aRes] = await Promise.all([
-            fetch(`https://api.datamuse.com/words?rel_syn=${word.word}&max=5`),
-            fetch(`https://api.datamuse.com/words?rel_ant=${word.word}&max=5`)
-          ]);
-          setRelated({ syn: await sRes.json(), ant: await aRes.json() });
-        } catch (e) { console.error("DataMuse error", e); }
-      };
-      getRelated();
-    }
-  }, [word]);
 
   const fetchWord = () => {
     axios.get(`/.netlify/functions/api/${id}`)
@@ -41,6 +27,30 @@ export default function WordDetail() {
         setLoading(false);
       })
       .catch(() => setLoading(false));
+  };
+
+  const generateAiContext = async () => {
+    setIsGenerating(true);
+    try {
+      // We'll reuse your 'deconstruct' logic but for word usage
+      const res = await axios.post('/.netlify/functions/api/deconstruct', { 
+        text: `Give me a creative, high-level sentence using the word "${word.word}" and explain the nuance.` 
+      });
+      setAiUsage(res.data);
+    } catch (err) {
+      console.error("Deep Link Error", err);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const startDeepLinkedCoach = () => {
+    // Navigate to coach and pass the specific sentence as state
+    navigate('/coach', { 
+      state: { 
+        initialMessage: `I want to practice using the word "${word.word}" specifically in this context: ${aiUsage.explanation}` 
+      } 
+    });
   };
 
   const handleSave = async () => {
@@ -62,42 +72,24 @@ export default function WordDetail() {
   if (!word) return <div className="app-container"><h1>Entry not found.</h1></div>;
 
   return (
-<div className="app-container">
-  <div 
-    className="detail-header-actions" 
-    style={{ 
-      display: 'flex', 
-      justifyContent: 'space-between', // Fixed: Added quotes
-      alignItems: 'center', 
-      marginBottom: '30px' 
-    }}
-  >
-    <Link to="/" className="back-link">
-      <ArrowLeft size={18}/> Back
-    </Link>
-  
-    {!isEditing && (
-      <button onClick={() => setIsEditing(true)} className="edit-word-btn">
-        <Edit3 size={18}/> Edit Word
-      </button>
-    )}
-  </div>
-
+    <div className="app-container">
+      <div className="detail-header-actions" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
+        <Link to="/" className="back-link"><ArrowLeft size={18}/> Back</Link>
+        {!isEditing && (
+          <button onClick={() => setIsEditing(true)} className="edit-word-btn">
+            <Edit3 size={18}/> Edit
+          </button>
+        )}
+      </div>
 
       <div className="form-card" style={{ maxWidth: '800px' }}>
         {isEditing ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <div className="form-group">
-              <label>WORD</label>
-              <input className="form-input" value={editData.word} onChange={e => setEditData({...editData, word: e.target.value})} />
-            </div>
-            <div className="form-group">
-              <label>MEANING</label>
-              <textarea className="form-input" rows="3" value={editData.meaning} onChange={e => setEditData({...editData, meaning: e.target.value})} />
-            </div>
-            <div className="btn-row" style={{ display: 'flex', gap: '10px' }}>
-              <button onClick={handleSave} className="add-btn" style={{ background: 'var(--primary)' }}><Save size={18} /> Save</button>
-              <button onClick={() => setIsEditing(false)} className="add-btn" style={{ background: 'var(--bg-input)' }}><X size={18} /> Cancel</button>
+            <input className="form-input" value={editData.word} onChange={e => setEditData({...editData, word: e.target.value})} />
+            <textarea className="form-input" rows="3" value={editData.meaning} onChange={e => setEditData({...editData, meaning: e.target.value})} />
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button onClick={handleSave} className="study-now-btn" style={{ background: 'var(--primary)' }}><Save size={18} /> Save</button>
+              <button onClick={() => setIsEditing(false)} className="study-now-btn" style={{ background: 'var(--bg-input)' }}><X size={18} /> Cancel</button>
             </div>
           </div>
         ) : (
@@ -108,33 +100,39 @@ export default function WordDetail() {
             </div>
 
             <div style={{ marginBottom: '30px' }}>
-              <label style={{ color: 'var(--primary)', fontWeight: '800', fontSize: '0.8rem', letterSpacing: '1px' }}>MEANING</label>
-              <p style={{ fontSize: '1.2rem', lineHeight: '1.6', marginTop: '10px' }}>{word.meaning}</p>
+              <label className="section-label">CORE MEANING</label>
+              <p style={{ fontSize: '1.2rem', marginTop: '10px' }}>{word.meaning}</p>
             </div>
 
-            {/* RELATED WORDS GRID */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '30px', padding: '20px', background: 'var(--bg-input)', borderRadius: '12px' }}>
-              <div>
-                <h4 style={{ fontSize: '0.7rem', color: 'var(--accent-green)', marginBottom: '10px' }}>SYNONYMS</h4>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
-                  {related.syn.length > 0 ? related.syn.map(s => <span key={s.word} style={{ fontSize: '0.85rem', opacity: 0.8 }}>{s.word},</span>) : '...'}
+            {/* DEEP LINKING AI SECTION */}
+            <div className="ai-creative-section" style={{ background: 'rgba(99, 102, 241, 0.05)', padding: '25px', borderRadius: '16px', border: '1px dashed var(--primary)' }}>
+              {!aiUsage ? (
+                <div style={{ textAlign: 'center' }}>
+                  <p style={{ opacity: 0.7, marginBottom: '15px' }}>Want to see how to use "{word.word}" like a native?</p>
+                  <button onClick={generateAiContext} disabled={isGenerating} className="neon-sparkle-btn" style={{ height: '45px' }}>
+                    {isGenerating ? "Consulting Groq..." : <><Sparkles size={18} /> Generate Creative Usage</>}
+                  </button>
                 </div>
-              </div>
-              <div>
-                <h4 style={{ fontSize: '0.7rem', color: 'var(--accent-red)', marginBottom: '10px' }}>ANTONYMS</h4>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
-                  {related.ant.length > 0 ? related.ant.map(a => <span key={a.word} style={{ fontSize: '0.85rem', opacity: 0.8 }}>{a.word},</span>) : '...'}
+              ) : (
+                <div className="fade-in">
+                  <label className="section-label" style={{ color: 'var(--accent-green)' }}>NUANCED EXPLANATION</label>
+                  <p style={{ fontStyle: 'italic', margin: '10px 0 20px 0' }}>{aiUsage.explanation}</p>
+                  
+                  <div style={{ background: 'var(--bg-card)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
+                     <label className="section-label">EXAMPLE VARIATION</label>
+                     <p style={{ margin: '5px 0' }}><strong>Formal:</strong> {aiUsage.variations?.formal}</p>
+                  </div>
+
+                  <button onClick={startDeepLinkedCoach} className="study-now-btn" style={{ width: '100%', justifyContent: 'center', gap: '10px' }}>
+                    <MessageCircle size={18} /> Start Coach Session with this Word
+                  </button>
                 </div>
-              </div>
+              )}
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: '40px', borderTop: '1px solid var(--border)', paddingTop: '20px' }}>
-              <div style={{ opacity: 0.5, fontSize: '0.8rem' }}>
-                Next Review: {word.next_review_date ? new Date(word.next_review_date).toLocaleDateString() : 'Today'}
-              </div>
-              <button onClick={deleteWord} className="delete-btn" style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.8rem' }}>
-                <Trash2 size={14} /> Remove Word
-              </button>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '40px', borderTop: '1px solid var(--border)', paddingTop: '20px' }}>
+              <div style={{ opacity: 0.5, fontSize: '0.8rem' }}>Added: {new Date(word.created_at).toLocaleDateString()}</div>
+              <button onClick={deleteWord} className="delete-btn"><Trash2 size={14} /> Remove Word</button>
             </div>
           </>
         )}
