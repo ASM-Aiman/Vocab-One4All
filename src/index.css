@@ -1,3 +1,4 @@
+/* --- GOOGLE FONT --- */
 @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap");
 
 :root {
@@ -19,103 +20,268 @@ body {
   color: var(--text-main);
   font-family: "Plus Jakarta Sans", sans-serif;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
-/* Container Layout */
+/* --- APP CONTAINER --- */
 .app-container {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 40px 20px;
+  padding: 20px 15px;
 }
-
-/* Header & Search */
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 40px;
-}
-
 .header h1 {
-  font-size: 2.5rem;
+  font-size: 1.8rem;
   font-weight: 800;
   margin: 0;
-  background: linear-gradient(to right, #fff, #94a3b8);
+  background: linear-gradient(90deg, #fff, #94a3b8);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-.add-btn {
-  background: var(--primary);
-  color: white;
-  padding: 12px 24px;
-  border-radius: 12px;
-  text-decoration: none;
-  font-weight: 600;
-  transition:
-    transform 0.2s,
-    background 0.2s;
+/* --- HEADER ACTIONS --- */
+.header-actions {
+  display: flex;
+  align-items: center; /* Keeps buttons perfectly leveled */
+  gap: 16px; /* This creates the "Woah" gap between the buttons */
+  flex-wrap: wrap; /* Ensures they stack neatly on tiny screens */
 }
 
-.btn-row {
-  display: flex;
-  gap: 12px;
-  margin-top: 16px;
-}
-
-.btn {
-  flex: 1;
-  display: flex;
+/* --- BUTTON REFINEMENTS --- */
+.add-btn,
+.study-mode-btn {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-
-  padding: 10px 16px;
-  border-radius: 10px;
-  border: none;
+  padding: 12px 20px;
+  text-decoration: none; /* Removes underline from the Link */
+  white-space: nowrap; /* Prevents text from wrapping inside the button */
+  border-radius: 14px;
+  font-weight: 700;
   cursor: pointer;
-
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Save Button */
-.btn-save {
-  background: #10b981; /* modern emerald */
+/* --- TOP NAVIGATION & ACTION BUTTONS --- */
+.back-link,
+.edit-word-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+/* Subtle "Glass" Back Button */
+.back-link {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+}
+
+.back-link:hover {
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--text-main);
+  border-color: var(--primary);
+  transform: translateX(-5px); /* Gentle slide left on hover */
+}
+
+/* Action Button (Edit Word) */
+.edit-word-btn {
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  color: var(--primary-hover);
+}
+
+.edit-word-btn:hover {
+  background: var(--primary);
   color: white;
-  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.25);
-}
-
-.btn-save:hover {
-  background: #0ea371;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 14px rgba(16, 185, 129, 0.35);
-}
-
-/* Cancel Button */
-.btn-cancel {
-  background: #2a2a2a;
-  color: #e5e5e5;
-  border: 1px solid #3a3a3a;
-}
-
-.btn-cancel:hover {
-  background: #3a3a3a;
-  color: white;
-  transform: translateY(-1px);
-}
-
-.add-btn:hover {
-  background: var(--primary-hover);
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
   transform: translateY(-2px);
 }
 
+.edit-word-btn:active {
+  transform: translateY(0);
+}
+
+/* Secondary style for Add Word to distinguish it from Study Due */
+.header-actions .add-btn:not(.study-mode-btn) {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+}
+
+.header-actions .add-btn:not(.study-mode-btn):hover {
+  background: var(--border);
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+
+/* Specific styling for the Study Due button to make it pop */
+.study-mode-btn {
+  background: var(--primary);
+  color: white;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+/* --- MOBILE SPACING --- */
+@media (max-width: 480px) {
+  .header-actions {
+    gap: 10px;
+    width: 100%;
+  }
+
+  .add-btn,
+  .study-mode-btn {
+    flex: 1; /* Makes buttons equal width on mobile */
+    font-size: 0.85rem;
+    padding: 10px;
+  }
+}
+/* 
+/* --- SEARCH BAR (MODERN AI STYLE) --- */
+/* --- SEARCH BAR (MOBILE RESPONSIVE + BOTTOM SPACE) --- */
 .search-container {
   position: relative;
   width: 100%;
-  max-width: 600px; /* Limits width on desktop */
-  margin: 0 auto 40px auto; /* Centers the bar */
+  max-width: 650px;
+  margin: 30px auto 45px; /* Added 45px space below search bar */
+}
+
+/* --- FORM & DETAIL CARDS --- */
+.form-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  padding: 40px;
+  width: 100%;
+  margin: 0 auto;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  box-sizing: border-box;
+}
+
+.form-group {
+  margin-bottom: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.form-group label {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--primary);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+/* --- INPUTS & SELECTS --- */
+.form-input {
+  width: 100%;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 18px;
+  color: var(--text-main);
+  font-size: 1rem;
+  font-family: inherit;
+  outline: none;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  border-color: var(--primary);
+  background: rgba(99, 102, 241, 0.05);
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+/* Style for textareas specifically */
+textarea.form-input {
+  line-height: 1.5;
+  min-height: 100px;
+}
+
+/* --- SUBMIT & ACTION BUTTONS --- */
+.submit-btn {
+  width: 100%;
+  background: var(--primary);
+  color: white;
+  padding: 16px;
+  border-radius: 16px;
+  font-size: 1rem;
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.submit-btn:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(99, 102, 241, 0.2);
+}
+
+/* --- ANIMATIONS --- */
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* --- MOBILE ADJUSTMENTS --- */
+@media (max-width: 600px) {
+  .form-card {
+    padding: 25px 20px;
+    border-radius: 20px;
+  }
+
+  .card-header h1 {
+    font-size: 2.2rem !important; /* Overriding the 3.5rem for mobile */
+  }
+
+  .btn-row {
+    flex-direction: column;
+  }
+
+  .btn-row button {
+    width: 100%;
+  }
+}
+
+.search-input {
+  width: 100%;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 14px 16px 14px 48px;
+  border-radius: 20px;
+  color: var(--text-main);
+  font-size: 1rem;
+  outline: none;
+  box-sizing: border-box;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.search-input:focus {
+  border-color: var(--primary);
+  background: var(--bg-input);
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
 }
 
 .search-icon-wrapper {
@@ -124,224 +290,439 @@ body {
   top: 50%;
   transform: translateY(-50%);
   color: var(--text-muted);
-  display: flex;
-  align-items: center;
-  pointer-events: none; /* Allows clicks to pass through to the input */
 }
 
-.search-input {
-  width: 100%;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  padding: 14px 20px 14px 48px; /* Extra left padding for the icon */
-  border-radius: 16px;
-  color: white;
-  font-size: 1rem;
-  outline: none;
-  transition: all 0.3s ease;
-  box-sizing: border-box; /* Crucial for mobile width calculation */
-}
-
-.search-input:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
-}
-
-/* Mobile Tweak */
-@media (max-width: 600px) {
-  .search-container {
-    margin-bottom: 30px;
-  }
-
-  .search-input {
-    font-size: 16px; /* Prevents iOS from zooming in on focus */
-    padding: 12px 16px 12px 42px;
-  }
-
-  .search-icon-wrapper {
-    left: 14px;
-  }
-}
-/* Card Grid */
+/* --- WORD GRID & CARDS --- */
 .word-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 35px;
 }
 
 .word-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  padding: 24px;
-  border-radius: 24px;
-  transition: all 0.3s ease;
-  position: relative;
+  padding: 32px; /* Increased padding for more "internal" space */
+  border-radius: 28px; /* Slightly rounder to match the larger size */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  min-height: 220px; /* Ensures a consistent, substantial height */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
-
 .word-card:hover {
   border-color: var(--primary);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
 }
 
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+/* Make the word inside the card bigger too */
+.word-card h3 {
+  font-size: 1.8rem; /* Big, bold title */
   margin-bottom: 12px;
+  color: #fff;
 }
 
-.card-header h2 {
-  font-size: 1.5rem;
-  margin: 0;
-  color: white;
+.word-card p {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-muted);
 }
-
 .difficulty-badge {
   font-size: 0.7rem;
   font-weight: 800;
-  text-transform: uppercase;
   padding: 4px 10px;
   border-radius: 20px;
-  letter-spacing: 0.5px;
-}
-
-.difficulty-badge.Hard {
-  background: rgba(239, 68, 68, 0.1);
-  color: var(--accent-red);
-}
-.difficulty-badge.Medium {
-  background: rgba(99, 102, 241, 0.1);
-  color: var(--primary);
+  color: #fff;
 }
 .difficulty-badge.Easy {
-  background: rgba(16, 185, 129, 0.1);
-  color: var(--accent-green);
+  background: var(--accent-green);
+}
+.difficulty-badge.Medium {
+  background: #facc15;
+}
+.difficulty-badge.Hard {
+  background: var(--accent-red);
 }
 
-.details-link {
-  text-decoration: none;
-  color: var(--primary);
-  font-weight: 600;
-  font-size: 0.9rem;
-}
-.meaning-text {
-  color: var(--text-muted);
-  line-height: 1.6;
-  margin-bottom: 20px;
-  font-style: italic;
-}
-
+/* --- CARD FOOTER & ACTIONS --- */
 .card-footer {
   display: flex;
   justify-content: space-between;
-  border-top: 1px solid var(--border);
-  padding-top: 16px;
+  align-items: center;
+  margin-top: auto; /* Pushes footer to bottom if card height varies */
+  padding-top: 15px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05); /* Subtle separator */
+}
+
+.details-link {
+  color: var(--primary);
+  font-weight: 700;
+  text-decoration: none;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+
+.details-link:hover {
+  color: var(--primary-hover);
+  transform: translateX(4px); /* Moves it slightly for a "link" feel */
 }
 
 .delete-btn {
-  background: none;
+  background: rgba(239, 68, 68, 0.1); /* Subtle red glow */
   border: none;
-  color: #475569;
+  color: var(--accent-red);
   cursor: pointer;
-  transition: color 0.2s;
+  padding: 8px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .delete-btn:hover {
+  background: var(--accent-red);
+  color: #fff;
+  transform: rotate(8deg) scale(1.1); /* Fun "wobble" effect */
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.delete-btn:active {
+  transform: scale(0.9);
+}
+
+/* Mobile tweak for the footer */
+@media (max-width: 480px) {
+  .card-footer {
+    padding-top: 12px;
+  }
+
+  .details-link {
+    font-size: 0.85rem;
+  }
+}
+/* --- STUDY MODE OVERLAY --- */
+.study-overlay-container {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at center, #111827 0%, #000000 100%);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  backdrop-filter: blur(15px);
+  perspective: 2000px; /* Perspective here keeps the flip stable */
+}
+
+/* --- THE NEON "X" BUTTON --- */
+.close-study-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid var(--accent-red);
   color: var(--accent-red);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10001;
+  transition: all 0.3s ease;
+  box-shadow:
+    0 0 10px rgba(239, 68, 68, 0.3),
+    inset 0 0 5px rgba(239, 68, 68, 0.2);
 }
 
-/* Form Styles */
-.form-card {
-  background: var(--bg-card);
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 40px;
-  border-radius: 32px;
-  border: 1px solid var(--border);
-}
-
-.form-group {
-  margin-bottom: 20px;
-}
-
-.form-group label {
-  display: block;
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  margin-bottom: 8px;
-  font-weight: 600;
-}
-
-.form-input {
-  width: 100%;
-  padding: 12px;
-  background: var(--bg-input);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  box-sizing: border-box;
+.close-study-btn:hover {
+  background: var(--accent-red);
   color: white;
-  outline: none;
+  box-shadow:
+    0 0 20px var(--accent-red),
+    0 0 40px var(--accent-red);
+  transform: rotate(90deg);
 }
 
-.submit-btn {
+.study-overlay-content {
   width: 100%;
-  padding: 16px;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+/* --- THE STABLE PIVOT CARD --- */
+.flashcard-scene {
+  width: 100%;
+  height: 500px; /* Fixed height is mandatory */
+  cursor: pointer;
+  max-width: 100%; /* Prevents overflow */
+}
+
+.flashcard-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-style: preserve-3d;
+  display: grid; /* Forces faces to stack perfectly */
+}
+
+.flashcard-inner.is-flipped {
+  transform: rotateY(180deg);
+}
+
+.card-face {
+  grid-area: 1 / 1; /* Both faces sit in the exact same grid spot */
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 25px; /* Reduced slightly for mobile comfort */
+  box-sizing: border-box; /* Essential so padding doesn't push the card out */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-card);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+  box-sizing: border-box;
+}
+
+.card-face-back {
+  transform: rotateY(180deg);
+  display: flex;
+  flex-direction: column;
+  /* Centering logic */
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 30px;
+  gap: 20px;
+}
+
+/* --- TYPOGRAPHY --- */
+.card-face-front h2 {
+  font-size: 2.8rem;
+  font-weight: 800;
+  text-align: center;
+  margin: 0;
+}
+
+.card-face-back h2 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+/* Create a scrollable area for the AI reply */
+.ai-content-scroll {
+  flex: 1; /* Takes up all available space */
+  width: 100%;
+  overflow-y: auto; /* Makes the chat reply scrollable */
+  padding-right: 8px; /* Room for scrollbar */
+  margin-bottom: 10px;
+
+  /* Hide scrollbar for Chrome/Safari but keep functionality */
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary) transparent;
+}
+
+.ai-content-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.ai-content-scroll::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 10px;
+}
+/* AI Feedback Box Styling */
+.ai-feedback-box {
+  background: rgba(99, 102, 241, 0.05);
+  border-left: 3px solid var(--primary);
+  padding: 15px;
+  border-radius: 0 12px 12px 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--text-main);
+}
+
+/* --- MOBILE TWEAKS --- */
+@media (max-width: 480px) {
+  .flashcard-scene {
+    height: 70vh; /* More room for AI text on mobile */
+  }
+
+  .close-study-btn {
+    top: 15px;
+    right: 15px;
+    width: 35px;
+    height: 35px;
+  }
+}
+
+.practice-container {
+  /* MAGIC: This centers the container vertically */
+  margin-top: auto;
+  margin-bottom: auto;
+
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* This centers the children horizontally */
+  gap: 12px;
+  z-index: 5;
+  border: none;
+  box-sizing: border-box; /* Prevents padding from pushing it wide */
+}
+.check-ai-btn {
+  width: 100%;
+  margin-top: 12px;
+  padding: 12px;
   background: var(--primary);
   color: white;
-  border: none;
-  border-radius: 12px;
   font-weight: 700;
+  border-radius: 12px;
+  border: none;
   cursor: pointer;
 }
 
-.card-body {
-  flex-grow: 1; /* Pushes the footer to the bottom of the card */
-  min-height: 100px;
+.progress-text {
+  color: var(--text-muted);
+  font-weight: 800;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
 }
 
-.meaning-text,
-.example-text {
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  word-break: break-word; /* Prevents long words from stretching the card */
-  max-width: 100%;
+.practice-input {
+  width: 100%;
+  text-align: center; /* Centers the typing text inside the bar */
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  padding: 14px;
+  border-radius: 12px;
+  color: white;
+  font-size: 1rem;
 }
 
-/* Update your existing header actions */
-.header-actions {
+.practice-input:focus {
+  border-color: var(--primary);
+}
+
+.check-ai-btn {
+  width: 100%;
+  margin-top: 12px;
+  padding: 12px;
+  background: var(--primary);
+  color: white;
+  font-weight: 700;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+}
+
+/* --- SRS BUTTONS --- */
+.srs-buttons {
   display: flex;
-  gap: 12px;
+  gap: 16px;
+  width: 100%;
 }
 
-/* Specific style for the Study Mode button to keep CSS clean */
-.study-mode-btn {
-  background: transparent !important;
-  border: 1px solid var(--primary) !important;
-  color: var(--primary) !important;
+.srs-buttons button {
+  flex: 1;
+  padding: 18px;
+  border-radius: 20px;
+  font-weight: 800;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  transition:
+    transform 0.2s,
+    background 0.2s;
 }
 
-.study-mode-btn:hover {
-  background: rgba(99, 102, 241, 0.1) !important;
+.srs-buttons button:active {
+  transform: scale(0.95);
 }
 
-/* RESPONSIVE FIX */
-@media (max-width: 650px) {
+.hard-btn {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid var(--accent-red) !important;
+  color: var(--accent-red);
+}
+
+.easy-btn {
+  background: var(--primary);
+  color: white;
+  box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+}
+
+/* --- MOBILE RESPONSIVE --- */
+@media (max-width: 480px) {
+  .study-overlay-container {
+    padding: 15px;
+  }
+
+  .flashcard-scene {
+    height: 65vh; /* Responsive height for mobile */
+    min-height: 400px;
+  }
+
+  .card-face-front h2 {
+    font-size: 2rem;
+  }
+
+  .srs-buttons {
+    position: fixed;
+    bottom: 30px;
+    width: calc(100% - 30px);
+  }
+
+  .study-overlay-content {
+    height: 100%;
+    justify-content: center;
+    padding-bottom: 100px; /* Space for fixed buttons */
+  }
+}
+
+/* --- MOBILE RESPONSIVE --- */
+@media (max-width: 600px) {
   .header {
     flex-direction: column;
-    align-items: center;
-    gap: 20px;
-    text-align: center;
+    align-items: flex-start;
   }
 
   .header-actions {
     width: 100%;
-    flex-direction: column; /* Stacks buttons on top of each other */
-    gap: 10px;
+    justify-content: space-between;
   }
 
-  .add-btn {
-    width: 100%; /* Buttons take full width of mobile screen */
-    justify-content: center;
-    box-sizing: border-box;
+  .search-container {
+    margin-bottom: 35px; /* Space below search bar on mobile */
+  }
+
+  .search-input {
+    font-size: 0.95rem;
+    padding: 14px 14px 14px 45px;
+  }
+
+  .flashcard-scene {
+    height: 480px;
+  }
+
+  .srs-buttons {
+    position: fixed;
+    bottom: 20px;
+    width: calc(100% - 40px);
+    display: flex;
+    gap: 10px;
   }
 }

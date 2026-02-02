@@ -62,15 +62,27 @@ export default function WordDetail() {
   if (!word) return <div className="app-container"><h1>Entry not found.</h1></div>;
 
   return (
-    <div className="app-container">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
-        <Link to="/" className="add-btn" style={{ background: 'transparent', border: '1px solid var(--border)', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-          <ArrowLeft size={18} /> Back
-        </Link>
-        {!isEditing && (
-          <button onClick={() => setIsEditing(true)} className="add-btn"><Edit3 size={18} /> Edit Word</button>
-        )}
-      </div>
+<div className="app-container">
+  <div 
+    className="detail-header-actions" 
+    style={{ 
+      display: 'flex', 
+      justifyContent: 'space-between', // Fixed: Added quotes
+      alignItems: 'center', 
+      marginBottom: '30px' 
+    }}
+  >
+    <Link to="/" className="back-link">
+      <ArrowLeft size={18}/> Back
+    </Link>
+  
+    {!isEditing && (
+      <button onClick={() => setIsEditing(true)} className="edit-word-btn">
+        <Edit3 size={18}/> Edit Word
+      </button>
+    )}
+  </div>
+
 
       <div className="form-card" style={{ maxWidth: '800px' }}>
         {isEditing ? (

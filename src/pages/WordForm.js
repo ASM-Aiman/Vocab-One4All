@@ -79,9 +79,9 @@ export default function WordForm() {
 
   return (
     <div className="app-container">
-      <Link to="/" className="add-btn" style={{ background: 'transparent', border: '1px solid var(--border)', marginBottom: '20px', display: 'inline-flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
-        <ArrowLeft size={18} /> Back to Library
-      </Link>
+      <Link to="/" className="back-link" style={{ marginBottom: '20px' }}>
+  <ArrowLeft size={18} /> Back to Library
+</Link>
 
       <div className="form-card">
         <h2 style={{ marginBottom: '10px' }}>New Archive Entry</h2>

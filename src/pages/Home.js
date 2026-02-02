@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api';
-import { Link, useNavigate } from 'react-router-dom'; // Added useNavigate
+import { checkSentence } from '../aiService';
+import { Link, useNavigate } from 'react-router-dom';
 import { Trash2, Search, ChevronLeft, ChevronRight, Volume2, X, Target, CheckCircle, LogOut } from 'lucide-react';
 
 export default function Home() {
-  const navigate = useNavigate(); // For redirecting after logout
+  const navigate = useNavigate();
   const [words, setWords] = useState([]);
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState('All');
@@ -17,6 +18,11 @@ export default function Home() {
   const [reviewIndex, setReviewIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
 
+  // AI State
+  const [userSentence, setUserSentence] = useState("");
+  const [aiFeedback, setAiFeedback] = useState("");
+  const [isLoadingAi, setIsLoadingAi] = useState(false);
+
   const dailyGoal = 5;
 
   useEffect(() => {
@@ -27,19 +33,22 @@ export default function Home() {
     api.get('').then(res => setWords(res.data)).catch(err => console.error("Fetch error:", err));
   };
 
-// --- LOGOUT LOGIC ---
+  const handleAiPractice = async (word) => {
+    if (!userSentence) return;
+    setIsLoadingAi(true);
+    const feedback = await checkSentence(word, userSentence);
+    setAiFeedback(feedback);
+    setIsLoadingAi(false);
+  };
+
   const handleLogout = () => {
     if (window.confirm("Logout of your archive?")) {
-      // 1. Clear the 'token' because that's what App.js checks
       localStorage.removeItem('token'); 
       localStorage.removeItem('username');
-      
-      // 2. Redirect to Auth and force a reload to clear the React state
       window.location.href = '/auth'; 
     }
   };
 
-  // --- SRS LOGIC: Calculate next review date ---
   const handleSRSUpdate = async (word, performance) => {
     let daysToAdd = performance === 'Easy' ? 4 : performance === 'Hard' ? 1 : 2;
     const nextDate = new Date();
@@ -65,6 +74,8 @@ export default function Home() {
     setIsReviewing(true);
     setReviewIndex(0);
     setIsFlipped(false);
+    setAiFeedback("");
+    setUserSentence("");
   };
 
   const wordsAddedToday = words.filter(w => 
@@ -97,53 +108,116 @@ export default function Home() {
   };
 
   return (
-    <div className="app-container">
-      {/* FLASHCARD OVERLAY (Remains the same) */}
-      {isReviewing && reviewWords.length > 0 && (
-        <div style={{
-          position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
-          backgroundColor: 'rgba(11, 15, 26, 0.98)', zIndex: 2000, display: 'flex',
-          flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px'
-        }}>
-          <button onClick={() => { setIsReviewing(false); fetchWords(); }} style={{ position: 'absolute', top: '20px', right: '20px', background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}>
-            <X size={28} />
-          </button>
-
-          <div style={{ color: 'var(--primary)', marginBottom: '20px', fontWeight: '800' }}>
+   <div className="app-container">
+  {/* FLASHCARD OVERLAY */}
+  {isReviewing && reviewWords.length > 0 && (
+    <div className="study-overlay-container active">
+      <div className="study-overlay-content" onClick={(e) => e.stopPropagation()}>
+        
+        {/* HEADER: Progress and Neon Close */}
+        <div className="flashcard-header">
+          <span className="progress-text">
             {reviewIndex + 1} / {reviewWords.length}
-          </div>
+          </span>
+          <button 
+            onClick={() => { setIsReviewing(false); fetchWords(); }} 
+            className="close-study-btn" /* Added the neon class here */
+          >
+            <X size={22} />
+          </button>
+        </div>
 
-          <div className="word-card" onClick={() => setIsFlipped(!isFlipped)} style={{ width: '100%', maxWidth: '450px', minHeight: '300px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', border: '2px solid var(--primary)', cursor: 'pointer', padding: '20px' }}>
-            {isFlipped ? (
-              <div>
-                <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', textTransform: 'uppercase' }}>Meaning</p>
-                <h2 style={{ fontSize: '1.5rem' }}>{reviewWords[reviewIndex].meaning}</h2>
+        {/* THE CARD */}
+        <div className="flashcard-scene" onClick={() => setIsFlipped(!isFlipped)}>
+          <div className={`flashcard-inner ${isFlipped ? 'is-flipped' : ''}`}>
+            
+            {/* FRONT FACE */}
+            <div className="card-face card-face-front">
+              <h2>{reviewWords[reviewIndex].word}</h2>
+              <p className="tap-text">Tap to see meaning</p>
+            </div>
+            
+            {/* BACK FACE */}
+            <div className="card-face card-face-back">
+              {/* This container makes the top part scrollable while input stays fixed */}
+              <div className="ai-scroll-area">
+                <div className="meaning-container">
+                  <p className="meaning-label">Meaning</p>
+                  <h2 className="meaning-text">{reviewWords[reviewIndex].meaning}</h2>
+                </div>
+                
+                {aiFeedback && (
+                  <div className="ai-feedback-box">
+                    {aiFeedback}
+                  </div>
+                )}
               </div>
-            ) : (
-              <h2 style={{ fontSize: '3rem' }}>{reviewWords[reviewIndex].word}</h2>
-            )}
-            <p style={{ marginTop: '20px', opacity: 0.3, fontSize: '0.7rem' }}>Tap to flip</p>
+              
+              <div className="practice-container" onClick={(e) => e.stopPropagation()}>
+                <input 
+                  type="text"
+                  placeholder="Practice sentence..."
+                  value={userSentence}
+                  onChange={(e) => setUserSentence(e.target.value)}
+                  className="practice-input"
+                />
+                <button 
+                  onClick={() => handleAiPractice(reviewWords[reviewIndex].word)}
+                  className="check-ai-btn"
+                  disabled={isLoadingAi}
+                >
+                  {isLoadingAi ? "Analyzing..." : "Check with AI"}
+                </button>
+              </div>
+            </div>
           </div>
+        </div>
 
-          <div style={{ marginTop: '30px', display: 'flex', gap: '10px', width: '100%', maxWidth: '450px' }}>
-            <button className="add-btn" style={{ flex: 1, background: '#ef444422', border: '1px solid #ef4444' }} onClick={() => handleSRSUpdate(reviewWords[reviewIndex], 'Hard')}>Hard (1d)</button>
-            <button className="add-btn" style={{ flex: 2 }} onClick={() => {
-              handleSRSUpdate(reviewWords[reviewIndex], 'Easy');
+        {/* SRS CONTROLS */}
+        <div className="srs-buttons">
+          <button 
+            className="hard-btn"
+            onClick={async () => {
+              await handleSRSUpdate(reviewWords[reviewIndex], 'Hard');
               if (reviewIndex < reviewWords.length - 1) {
                 setReviewIndex(prev => prev + 1);
                 setIsFlipped(false);
+                setAiFeedback("");
+                setUserSentence("");
               } else {
                 setIsReviewing(false);
                 fetchWords();
               }
-            }}>
-              {reviewIndex === reviewWords.length - 1 ? "Finish" : "Easy (4d)"}
-            </button>
-          </div>
+            }}
+          >
+            Hard
+          </button>
+          <button 
+            className="easy-btn"
+            onClick={async () => {
+              await handleSRSUpdate(reviewWords[reviewIndex], 'Easy');
+              if (reviewIndex < reviewWords.length - 1) {
+                setReviewIndex(prev => prev + 1);
+                setIsFlipped(false);
+                setAiFeedback("");
+                setUserSentence("");
+              } else {
+                setIsReviewing(false);
+                fetchWords();
+              }
+            }}
+          >
+            {reviewIndex === reviewWords.length - 1 ? "Finish" : "Easy"}
+          </button>
         </div>
-      )}
 
-      {/* TOP NAVBAR (Logout Added Here) */}
+      </div>
+    </div>
+  )}
+
+
+
+      {/* TOP NAVBAR */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
         <h1 style={{ fontSize: '1.2rem', margin: 0 }}>One4All-Vocab</h1>
         <button 
@@ -154,7 +228,7 @@ export default function Home() {
         </button>
       </div>
 
-      {/* DAILY GOAL TRACKER (Remains same) */}
+      {/* DAILY GOAL TRACKER */}
       <div style={{ background: 'var(--bg-card)', padding: '20px', borderRadius: '15px', marginBottom: '30px', border: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
           <div style={{ background: 'var(--bg-input)', borderRadius: '50%', display: 'flex', padding: '10px' }}>
@@ -179,7 +253,7 @@ export default function Home() {
       <div className="header">
         <h1>Archives</h1>
         <div className="header-actions">
-          <button onClick={startReview} className="add-btn study-mode-btn" style={{ background: 'var(--bg-input)', border: '1px solid var(--primary)', color: 'var(--primary)' }}>
+          <button onClick={startReview} className="add-btn study-mode-btn">
             Study Due
           </button>
           <Link to="/add" className="add-btn">+ Add Word</Link>
@@ -212,7 +286,7 @@ export default function Home() {
         ))}
       </div>
 
-      {/* PAGINATION (Remains same) */}
+      {/* PAGINATION */}
       {filteredWords.length > wordsPerPage && (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '20px', marginTop: '40px', paddingBottom: '40px' }}>
           <button disabled={currentPage === 1} onClick={() => setCurrentPage(prev => prev - 1)} className="add-btn" style={{ opacity: currentPage === 1 ? 0.3 : 1 }}><ChevronLeft size={18} /></button>
