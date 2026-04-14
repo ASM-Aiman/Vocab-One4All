@@ -136,38 +136,106 @@ exports.handler = async (event) => {
     }
 
 
-      if (method === 'POST' && lastPathPart === 'coach-session') {
-  // Fetch archive for context
-  const result = await client.execute({
-    sql: "SELECT text, explanation FROM sentences WHERE user_id = ? LIMIT 10",
-    args: [userId]
-  });
   
-  const archiveContext = result.rows.map(r => `Sentence: ${r.text} (Context: ${r.explanation})`).join('\n');
+// --- C. DAILY CHALLENGE SCENARIOS ---
 
+    if (method === 'GET' && lastPathPart === 'daily-scenario') {
+      // 1. Pull a random word from the user's saved vocabulary
+      const result = await client.execute({
+        sql: "SELECT * FROM words WHERE user_id = ? ORDER BY RANDOM() LIMIT 1",
+        args: [userId]
+        
+      });
+
+      // Fallback if the user hasn't saved any words yet
+      let targetWord = "resilient";
+      let wordId = "fallback-1";
+      let wordMeaning = "able to withstand or recover quickly from difficult conditions";
+
+      if (result.rows.length > 0) {
+        targetWord = result.rows[0].word;
+        wordId = result.rows[0].id;
+        wordMeaning = result.rows[0].meaning;
+      }
+
+      // 2. Ask the LLM to generate a custom scenario for this word
   const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-    method: "POST",
-    headers: { "Authorization": `Bearer ${process.env.GROK_API_KEY}`, "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: "llama-3.3-70b-versatile",
-      messages: [
-        { 
-          role: "system", 
-          content: `You are a Fluency Coach. 
-          If the user provides a specific word/context to practice, build a scenario around THAT. 
-          Otherwise, use their ARCHIVE to pick a challenge.
-          Current Archive:\n${archiveContext}
-          
-          Tone: Encouraging but corrective. Always use 'Shadow Correction' if they mess up.` 
-        },
-        { role: "user", content: body.message || "Start the session." }
-      ]
-    })
-  });
-  
-  const data = await response.json();
-  return { statusCode: 200, body: JSON.stringify({ reply: data.choices[0].message.content }) };
-}
+        method: "POST",
+        headers: { "Authorization": `Bearer ${process.env.GROK_API_KEY}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "llama-3.3-70b-versatile",
+          messages: [
+            { 
+              role: "system", 
+              content: "You are a witty language memory coach. Generate a vivid, slightly funny 1-2 sentence scenario where the user needs to use the target word. Replace the target word with '_____'. Then, generate 3 incorrect but plausible alternative words. Return ONLY a JSON object with keys: 'text' (the scenario), 'hint' (simplified meaning), and 'options' (an array of 4 strings containing the target word and the 3 incorrect words, shuffled into a random order)." 
+            },
+            { role: "user", content: `Target Word: "${targetWord}". Dictionary Meaning: "${wordMeaning}"` }
+          ],
+          response_format: { type: "json_object" },
+          temperature: 0.8 
+        })
+      });
+      
+      const data = await response.json();
+      const aiScenario = JSON.parse(data.choices[0].message.content);
+
+      // Return the scenario. We pass the wordId as the scenario 'id' so we can look it up during the check.
+      return { 
+        statusCode: 200, 
+        body: JSON.stringify({ 
+          id: wordId, 
+          text: aiScenario.text, 
+          hint: aiScenario.hint,
+          options: aiScenario.options
+        }) 
+      };
+    }
+
+if (method === 'POST' && lastPathPart === 'check-scenario') {
+      const { scenarioId, answer, options } = body; // Notice we added 'options' here!
+
+      // 1. Retrieve the correct word from the database
+      let targetWord = "resilient"; 
+      if (scenarioId !== "fallback-1") {
+        const result = await client.execute({
+          sql: "SELECT word FROM words WHERE id = ? AND user_id = ?",
+          args: [scenarioId, userId]
+        });
+        
+        if (result.rows.length > 0) {
+          targetWord = result.rows[0].word;
+        } else {
+          return { statusCode: 404, body: JSON.stringify({ error: "Word not found in archives." }) };
+        }
+      }
+
+      // 2. Ask the LLM to grade the answer AND define all the options
+      const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${process.env.GROK_API_KEY}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "llama-3.3-70b-versatile",
+          messages: [
+            { 
+              role: "system", 
+              content: "You are a supportive language tutor. 1. Check if the user's answer matches the target word (allow close synonyms). 2. Return a JSON object with keys: 'isCorrect' (boolean), 'message' (brief encouraging feedback), and 'definitions' (an object mapping EVERY word in the provided options array to a short, punchy 3-5 word definition)." 
+            },
+            { 
+              role: "user", 
+              content: `Target Word: "${targetWord}". User's Guess: "${answer}". All Options: ${JSON.stringify(options)}` 
+            }
+          ],
+          response_format: { type: "json_object" },
+          temperature: 0.3 
+        })
+      });
+      
+      const data = await response.json();
+      const grading = JSON.parse(data.choices[0].message.content);
+
+      return { statusCode: 200, body: JSON.stringify(grading) };
+    }
+
 
     // C. WORDS RESOURCE (Generic Fallback)
     if (method === 'GET') {
