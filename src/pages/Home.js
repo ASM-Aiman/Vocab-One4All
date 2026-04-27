@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import api from '../api';
 import { checkSentence } from '../aiService';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import StudyMode from './StudyMode';
 import { 
   Trash2, Search, ChevronLeft, ChevronRight, Volume2, 
   X, Target, CheckCircle, LogOut, MessageSquare, Type, Quote, Plus, BookOpen, Sparkles, ArrowLeft, ArrowRight
@@ -12,6 +13,7 @@ function SentenceCard({ sentence, inlineInputStyle, fetchSentences, deleteSenten
   const [isEditing, setIsEditing] = useState(false);
   const [editedText, setEditedText] = useState(sentence.text);
   const [editedEx, setEditedEx] = useState(sentence.explanation);
+
 
   const handleUpdate = async () => {
     try {
@@ -127,6 +129,7 @@ export default function Home() {
   const [activeFilter, setActiveFilter] = useState('All');
   const [currentPage, setCurrentPage] = useState(1);
   const wordsPerPage = 6;
+    const [isStudyMode, setIsStudyMode] = useState(false);
 
   // Review / Flashcard State
   const [isReviewing, setIsReviewing] = useState(false);
@@ -354,6 +357,13 @@ export default function Home() {
 
   return (
     <div className="app-container">
+      {isStudyMode && (
+  <StudyMode
+    allWords={words}
+    onClose={() => setIsStudyMode(false)}
+  />
+)}
+ 
       {/* FLASHCARD OVERLAY - FIXED LAYOUT */}
       {isReviewing && reviewWords.length > 0 && (
         <div className="study-overlay-container active" style={{
@@ -749,11 +759,20 @@ export default function Home() {
                 <Plus size={18} /> <span>{viewMode === 'words' ? 'Word' : 'Sentence'}</span>
               </Link>
               
-              {viewMode === 'words' && (
-                <button onClick={() => startReview()} className="study-now-btn">
-                  <BookOpen size={18} /> <span>Study</span>
-                </button>
-              )}
+            {viewMode === 'words' && (
+  <button
+    onClick={() => {
+      if (words.length === 0) {
+        alert("Add some words first!");
+        return;
+      }
+      setIsStudyMode(true);
+    }}
+    className="study-now-btn"
+  >
+    <BookOpen size={18} /> <span>Study</span>
+  </button>
+)}
             </div>
         </div>
       </div>
