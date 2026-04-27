@@ -5,7 +5,7 @@ import WordForm from './pages/WordForm';
 import WordDetail from './pages/WordDetail';
 import Auth from './pages/Auth';
 import SentenceForm from './pages/SentenceForm';
-import FluencyCoach from './pages/FluencyCoach';
+import List from './pages/List';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
@@ -30,8 +30,8 @@ function App() {
 
           {/* Fluency Coach Route - Updated to use your existing auth pattern */}
           <Route 
-            path="/coach" 
-            element={isAuthenticated ? <FluencyCoach /> : <Navigate to="/auth" />} 
+            path="/list" 
+            element={isAuthenticated ? <List/> : <Navigate to="/auth" />} 
           />
 
           <Route 

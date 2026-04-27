@@ -751,8 +751,8 @@ export default function Home() {
                 </button>
               </div>
               
-              <button onClick={() => navigate('/coach')} className="neon-sparkle-btn coach-mobile-fix">
-                <MessageSquare size={18} /> <span>Coach</span>
+              <button onClick={() => navigate('/list')} className="neon-sparkle-btn coach-mobile-fix">
+                <MessageSquare size={18} /> <span>List</span>
               </button>
 
               <Link to={viewMode === 'words' ? "/add" : "/add-sentence"} className="add-btn-main">
