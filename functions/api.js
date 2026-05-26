@@ -82,7 +82,7 @@ exports.handler = async (event) => {
     }
 
     if (method === 'POST' && lastPathPart === 'check-ai') {
-        const response = await fetch(process.env.GROK_API_URL, {
+        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", { // Fixed URL to match others
           method: "POST",
           headers: { "Authorization": `Bearer ${process.env.GROK_API_KEY}`, "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -96,6 +96,26 @@ exports.handler = async (event) => {
         });
         const data = await response.json();
         return { statusCode: 200, body: JSON.stringify({ text: data.choices[0].message.content }) };
+    }
+
+    // NEW ROUTE: AI Word Examples
+    if (method === 'POST' && lastPathPart === 'generate-examples') {
+      const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${process.env.GROK_API_KEY}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "llama-3.3-70b-versatile",
+          messages: [
+            { role: "user", content: body.prompt }
+          ],
+          response_format: { type: "json_object" }, // Ensures Groq returns valid JSON as requested in the prompt
+          temperature: 0.7 
+        })
+      });
+      const data = await response.json();
+      
+      // Sending it back wrapped in { text: ... } to match what the frontend expects
+      return { statusCode: 200, body: JSON.stringify({ text: data.choices[0].message.content }) };
     }
 
     // B. SENTENCES RESOURCE
@@ -121,9 +141,8 @@ exports.handler = async (event) => {
         });
         return { statusCode: 200, body: JSON.stringify({ message: "Deleted" }) };
       }
-      // Inside your Protected Routes in api.js:
       if (method === 'PUT' && pathParts.includes('sentences')) {
-        const id = lastPathPart; // This gets the ID from /sentences/123
+        const id = lastPathPart; 
         const { text, explanation } = body;
         
         await client.execute({
@@ -136,18 +155,15 @@ exports.handler = async (event) => {
     }
 
 
-  
-// --- C. DAILY CHALLENGE SCENARIOS ---
+  // --- C. DAILY CHALLENGE SCENARIOS ---
 
     if (method === 'GET' && lastPathPart === 'daily-scenario') {
-      // 1. Pull a random word from the user's saved vocabulary
       const result = await client.execute({
         sql: "SELECT * FROM words WHERE user_id = ? ORDER BY RANDOM() LIMIT 1",
         args: [userId]
         
       });
 
-      // Fallback if the user hasn't saved any words yet
       let targetWord = "resilient";
       let wordId = "fallback-1";
       let wordMeaning = "able to withstand or recover quickly from difficult conditions";
@@ -158,7 +174,6 @@ exports.handler = async (event) => {
         wordMeaning = result.rows[0].meaning;
       }
 
-      // 2. Ask the LLM to generate a custom scenario for this word
   const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
         headers: { "Authorization": `Bearer ${process.env.GROK_API_KEY}`, "Content-Type": "application/json" },
@@ -179,7 +194,6 @@ exports.handler = async (event) => {
       const data = await response.json();
       const aiScenario = JSON.parse(data.choices[0].message.content);
 
-      // Return the scenario. We pass the wordId as the scenario 'id' so we can look it up during the check.
       return { 
         statusCode: 200, 
         body: JSON.stringify({ 
@@ -191,10 +205,9 @@ exports.handler = async (event) => {
       };
     }
 
-if (method === 'POST' && lastPathPart === 'check-scenario') {
-      const { scenarioId, answer, options } = body; // Notice we added 'options' here!
+    if (method === 'POST' && lastPathPart === 'check-scenario') {
+      const { scenarioId, answer, options } = body; 
 
-      // 1. Retrieve the correct word from the database
       let targetWord = "resilient"; 
       if (scenarioId !== "fallback-1") {
         const result = await client.execute({
@@ -209,7 +222,6 @@ if (method === 'POST' && lastPathPart === 'check-scenario') {
         }
       }
 
-      // 2. Ask the LLM to grade the answer AND define all the options
       const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
         headers: { "Authorization": `Bearer ${process.env.GROK_API_KEY}`, "Content-Type": "application/json" },
@@ -256,11 +268,23 @@ if (method === 'POST' && lastPathPart === 'check-scenario') {
       return { statusCode: 201, body: JSON.stringify({ message: "Word saved" }) };
     }
 
-    if (method === 'PUT') {
+  if (method === 'PUT') {
       const id = lastPathPart;
+      
+      // NEW: Save the AI Vibe Check if it's included in the request
+      if (body.vibe_one_liner) {
+        await client.execute({
+          sql: "UPDATE words SET vibe_one_liner = ?, vibe_examples = ? WHERE id = ? AND user_id = ?",
+          args: [body.vibe_one_liner, JSON.stringify(body.vibe_examples), id, userId]
+        });
+        return { statusCode: 200, body: JSON.stringify({ message: "Vibe saved" }) };
+      }
+
+      // Existing logic for SRS dates
       if (body.next_review_date && !body.word) {
         await client.execute({ sql: "UPDATE words SET next_review_date = ? WHERE id = ? AND user_id = ?", args: [body.next_review_date, id, userId] });
       } else {
+        // Existing logic for standard edits
         await client.execute({
           sql: "UPDATE words SET word = ?, meaning = ?, example_sentence = ?, difficulty = ? WHERE id = ? AND user_id = ?",
           args: [body.word || "", body.meaning || "", body.example_sentence || "", body.difficulty || "Medium", id, userId]

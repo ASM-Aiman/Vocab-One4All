@@ -1,26 +1,39 @@
-/* --- GOOGLE FONT --- */
-@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap");
+/* --- GOOGLE FONTS: RENAISSANCE & CLASSIC --- */
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=EB+Garamond:ital,wght@0,400;0,600;0,800;1,400;1,600&display=swap");
 
 :root {
-  --bg-main: #0b0f1a;
-  --bg-card: #161b2c;
-  --bg-input: #1f263d;
-  --primary: #6366f1;
-  --primary-hover: #818cf8;
-  --text-main: #f1f5f9;
-  --text-muted: #94a3b8;
-  --border: #2d364f;
-  --accent-green: #10b981;
-  --accent-red: #ef4444;
+  /* Midnight Scholar Palette (Black & Burnt Orange) */
+  --bg-main: #0a0806;       /* Deepest Black with a tiny warm undertone */
+  --bg-card: #14110e;       /* Slightly lighter obsidian for cards */
+  --bg-input: #1f1a15;      /* Dark pressed texture for inputs */
+  --primary: #d97706;       /* Burnt Orange / Amber */
+  --primary-hover: #f59e0b; /* Bright Orange / Gold */
+  --text-main: #e8dcc7;     /* Aged Paper / Warm Off-White */
+  --text-muted: #8a7d6d;    /* Faded ink */
+  --border: #2e261f;        /* Subtle dark binding */
+  --border-dark: #5c3a21;   /* Stronger wood/leather accent */
+  --accent-green: #4d7c0f;  /* Olive */
+  --accent-red: #991b1b;    /* Dark crimson */
+  --gold: #d97706;          /* Re-using primary for gold accents */
 }
 
 body {
   margin: 0;
   background-color: var(--bg-main);
   color: var(--text-main);
-  font-family: "Plus Jakarta Sans", sans-serif;
+  font-family: "EB Garamond", serif;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+  /* Subtle texture illusion for the dark background */
+  background-image: radial-gradient(circle, rgba(217, 119, 6, 0.03) 1px, transparent 1px);
+  background-size: 10px 10px;
+}
+
+/* Typography Overrides for Headers */
+h1, h2, h3, .section-label, .card-face-front h2, .main-sentence-text {
+  font-family: "Cinzel", serif;
+  font-weight: 600;
+  color: var(--primary);
 }
 
 /* --- APP CONTAINER --- */
@@ -29,59 +42,59 @@ body {
   margin: 0 auto;
   padding: 20px 15px;
 }
+
 .header h1 {
-  font-size: 1.8rem;
+  font-size: 2rem;
   font-weight: 800;
   margin: 0;
-  background: linear-gradient(90deg, #fff, #94a3b8);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--text-main);
+  text-shadow: 2px 2px 0px #000;
 }
 
 /* --- HEADER ACTIONS --- */
 .header-actions {
   display: flex;
-  align-items: center; /* Keeps buttons perfectly leveled */
-  gap: 16px; /* This creates the "Woah" gap between the buttons */
-  flex-wrap: wrap; /* Ensures they stack neatly on tiny screens */
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
-/* --- BUTTON REFINEMENTS --- */
-/* Premium Study Button */
+/* --- CLASSIC BUTTON REFINEMENTS --- */
 .study-now-btn {
-  background: linear-gradient(135deg, var(--primary), #6366f1);
-  color: white;
-  border: none;
+  background: var(--primary);
+  color: #0a0806; /* Dark text on orange background for contrast */
+  border: 1px solid var(--primary-hover);
   padding: 10px 22px;
-  border-radius: 10px;
-  font-weight: 600;
+  border-radius: 2px; /* Sharp corners */
+  font-family: "Cinzel", serif;
+  font-weight: 800;
   cursor: pointer;
   white-space: nowrap;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+  box-shadow: 2px 2px 0px #000; /* Hard retro shadow */
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 0.9rem;
+  letter-spacing: 1px;
 }
 
 .study-now-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
-  filter: brightness(1.1);
+  background: var(--primary-hover);
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0px #000;
 }
 
 .study-now-btn:active {
-  transform: translateY(0);
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }
 
-/* Ensure the toggle buttons feel tactile */
 .toggle-btn:hover:not(.active) {
-  background: rgba(255, 255, 255, 0.05) !important;
-  color: var(--text-main) !important;
+  background: rgba(217, 119, 6, 0.1) !important;
+  color: var(--primary) !important;
 }
 
-/* Responsiveness for small screens */
 @media (max-width: 768px) {
   .action-row {
     width: 100%;
@@ -98,100 +111,124 @@ body {
   align-items: center;
   gap: 8px;
   padding: 10px 18px;
-  border-radius: 12px;
-  font-size: 0.9rem;
+  border-radius: 2px;
+  font-size: 1rem;
   font-weight: 600;
   text-decoration: none;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s ease;
   cursor: pointer;
+  font-family: "EB Garamond", serif;
 }
 
-/* Subtle "Glass" Back Button */
 .back-link {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--border);
-  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid var(--border-dark);
+  color: var(--text-main);
 }
 
 .back-link:hover {
-  background: rgba(255, 255, 255, 0.07);
-  color: var(--text-main);
+  background: var(--bg-card);
+  color: var(--primary);
   border-color: var(--primary);
-  transform: translateX(-5px); /* Gentle slide left on hover */
 }
 
-/* Action Button (Edit Word) */
 .edit-word-btn {
-  background: rgba(99, 102, 241, 0.1);
-  border: 1px solid rgba(99, 102, 241, 0.3);
-  color: var(--primary-hover);
+  background: var(--bg-card);
+  border: 1px solid var(--border-dark);
+  color: var(--text-main);
 }
 
 .edit-word-btn:hover {
-  background: var(--primary);
-  color: white;
-  box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
-  transform: translateY(-2px);
-}
-
-.edit-word-btn:active {
-  transform: translateY(0);
-}
-
-/* Secondary style for Add Word to distinguish it from Study Due */
-.header-actions .add-btn:not(.study-mode-btn) {
   background: var(--bg-input);
-  border: 1px solid var(--border);
+  color: var(--primary);
+}
+
+.header-actions .add-btn:not(.study-mode-btn) {
+  background: var(--bg-card);
+  border: 1px solid var(--border-dark);
   color: var(--text-main);
+  border-radius: 2px;
 }
 
 .header-actions .add-btn:not(.study-mode-btn):hover {
-  background: var(--border);
+  background: var(--bg-input);
   border-color: var(--primary);
-  transform: translateY(-2px);
 }
 
-/* Specific styling for the Study Due button to make it pop */
 .study-mode-btn {
   background: var(--primary);
-  color: white;
-  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+  color: #0a0806;
+  border-radius: 2px;
 }
 
-/* --- MOBILE SPACING --- */
 @media (max-width: 480px) {
   .header-actions {
     gap: 10px;
     width: 100%;
   }
-
   .add-btn,
   .study-mode-btn {
-    flex: 1; /* Makes buttons equal width on mobile */
-    font-size: 0.85rem;
+    flex: 1;
+    font-size: 0.9rem;
     padding: 10px;
   }
 }
-/* 
-/* --- SEARCH BAR (MODERN AI STYLE) --- */
-/* --- SEARCH BAR (MOBILE RESPONSIVE + BOTTOM SPACE) --- */
+
+/* --- SEARCH BAR --- */
 .search-container {
   position: relative;
   width: 100%;
   max-width: 650px;
-  margin: 30px auto 45px; /* Added 45px space below search bar */
+  margin: 30px auto 45px;
+}
+
+.search-input {
+  width: 100%;
+  background: var(--bg-card);
+  border: 2px solid var(--border-dark);
+  padding: 14px 16px 14px 48px;
+  border-radius: 2px;
+  color: var(--text-main);
+  font-size: 1.1rem;
+  font-family: "EB Garamond", serif;
+  outline: none;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.5);
+}
+
+.search-input:focus {
+  border-color: var(--primary);
+  background: var(--bg-input);
+}
+
+.search-icon-wrapper {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--border-dark);
 }
 
 /* --- FORM & DETAIL CARDS --- */
 .form-card {
   background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 28px;
+  border: 1px solid var(--border-dark);
+  border-radius: 4px;
   padding: 40px;
   width: 100%;
   margin: 0 auto;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  box-shadow: 6px 6px 0px #000; /* Hard shadow for dark retro */
   box-sizing: border-box;
+  position: relative;
+}
+
+.form-card::after {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 1px solid var(--border);
+  pointer-events: none;
 }
 
 .form-group {
@@ -202,22 +239,21 @@ body {
 }
 
 .form-group label {
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   font-weight: 800;
-  color: var(--primary);
-  letter-spacing: 1.5px;
+  color: var(--text-muted);
+  letter-spacing: 1px;
   text-transform: uppercase;
 }
 
-/* --- INPUTS & SELECTS --- */
 .form-input {
   width: 100%;
   background: var(--bg-input);
-  border: 1px solid var(--border);
-  border-radius: 14px;
+  border: 1px solid var(--border-dark);
+  border-radius: 2px;
   padding: 14px 18px;
   color: var(--text-main);
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-family: inherit;
   outline: none;
   transition: all 0.2s ease;
@@ -226,100 +262,36 @@ body {
 
 .form-input:focus {
   border-color: var(--primary);
-  background: rgba(99, 102, 241, 0.05);
-  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+  background: var(--bg-card);
 }
 
-/* Style for textareas specifically */
 textarea.form-input {
-  line-height: 1.5;
+  line-height: 1.6;
   min-height: 100px;
 }
 
-/* --- SUBMIT & ACTION BUTTONS --- */
 .submit-btn {
   width: 100%;
   background: var(--primary);
-  color: white;
+  color: #0a0806;
   padding: 16px;
-  border-radius: 16px;
-  font-size: 1rem;
+  border-radius: 2px;
+  font-size: 1.1rem;
+  font-family: "Cinzel", serif;
   font-weight: 800;
-  border: none;
+  border: 1px solid var(--primary-hover);
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
+  letter-spacing: 1px;
 }
 
 .submit-btn:hover {
   background: var(--primary-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(99, 102, 241, 0.2);
-}
-
-/* --- ANIMATIONS --- */
-.animate-spin {
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* --- MOBILE ADJUSTMENTS --- */
-@media (max-width: 600px) {
-  .form-card {
-    padding: 25px 20px;
-    border-radius: 20px;
-  }
-
-  .card-header h1 {
-    font-size: 2.2rem !important; /* Overriding the 3.5rem for mobile */
-  }
-
-  .btn-row {
-    flex-direction: column;
-  }
-
-  .btn-row button {
-    width: 100%;
-  }
-}
-
-.search-input {
-  width: 100%;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  padding: 14px 16px 14px 48px;
-  border-radius: 20px;
-  color: var(--text-main);
-  font-size: 1rem;
-  outline: none;
-  box-sizing: border-box;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-}
-
-.search-input:focus {
-  border-color: var(--primary);
-  background: var(--bg-input);
-  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
-}
-
-.search-icon-wrapper {
-  position: absolute;
-  left: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--text-muted);
+  box-shadow: 2px 2px 0px #000;
 }
 
 /* --- WORD GRID & CARDS --- */
@@ -331,132 +303,107 @@ textarea.form-input {
 
 .word-card {
   background: var(--bg-card);
-  border: 1px solid var(--border);
-  padding: 32px; /* Increased padding for more "internal" space */
-  border-radius: 28px; /* Slightly rounder to match the larger size */
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid var(--border-dark);
+  padding: 28px; 
+  border-radius: 4px; 
+  transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
-  min-height: 220px; /* Ensures a consistent, substantial height */
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-}
-.word-card:hover {
-  border-color: var(--primary);
-  transform: translateY(-5px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  min-height: 220px; 
+  box-shadow: 4px 4px 0px #000; 
+  position: relative;
 }
 
-/* Make the word inside the card bigger too */
+.word-card::after {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border: 1px solid var(--border);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.word-card:hover {
+  border-color: var(--primary);
+  transform: translateY(-3px);
+  box-shadow: 6px 6px 0px #000;
+}
+
 .word-card h3 {
-  font-size: 1.8rem; /* Big, bold title */
+  font-size: 1.8rem;
   margin-bottom: 12px;
-  color: #fff;
+  color: var(--primary);
 }
 
 .word-card p {
-  font-size: 1rem;
+  font-size: 1.1rem;
   line-height: 1.6;
-  color: var(--text-muted);
+  color: var(--text-main);
 }
+
 .difficulty-badge {
-  font-size: 0.7rem;
+  font-size: 0.75rem;
+  font-family: "Cinzel", serif;
   font-weight: 800;
   padding: 4px 10px;
-  border-radius: 20px;
-  color: #fff;
+  border-radius: 2px;
+  border: 1px solid currentColor;
+  background: transparent;
+  text-transform: uppercase;
 }
-.difficulty-badge.Easy {
-  background: var(--accent-green);
-}
-.difficulty-badge.Medium {
-  background: #facc15;
-}
-.difficulty-badge.Hard {
-  background: var(--accent-red);
-}
+.difficulty-badge.Easy { color: var(--accent-green); }
+.difficulty-badge.Medium { color: var(--gold); }
+.difficulty-badge.Hard { color: var(--accent-red); }
 
 /* --- CARD FOOTER & ACTIONS --- */
 .card-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: auto; /* Pushes footer to bottom if card height varies */
+  margin-top: auto;
   padding-top: 15px;
-  border-top: 1px solid rgba(255, 255, 255, 0.05); /* Subtle separator */
-}
-
-.details-link {
-  color: var(--primary);
-  font-weight: 700;
-  text-decoration: none;
-  font-size: 0.9rem;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  transition: all 0.2s ease;
-}
-
-.details-link:hover {
-  color: var(--primary-hover);
-  transform: translateX(4px); /* Moves it slightly for a "link" feel */
+  border-top: 1px solid var(--border);
 }
 
 .delete-btn {
-  background: rgba(239, 68, 68, 0.1); /* Subtle red glow */
-  border: none;
+  background: transparent;
+  border: 1px solid var(--accent-red);
   color: var(--accent-red);
   cursor: pointer;
   padding: 8px;
-  border-radius: 10px;
+  border-radius: 2px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s ease;
 }
 
 .delete-btn:hover {
   background: var(--accent-red);
   color: #fff;
-  transform: rotate(8deg) scale(1.1); /* Fun "wobble" effect */
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
-.delete-btn:active {
-  transform: scale(0.9);
-}
-
-/* Mobile tweak for the footer */
-@media (max-width: 480px) {
-  .card-footer {
-    padding-top: 12px;
-  }
-
-  .details-link {
-    font-size: 0.85rem;
-  }
-}
 /* --- STUDY MODE OVERLAY --- */
 .study-overlay-container {
   position: fixed;
   inset: 0;
-  background: radial-gradient(circle at center, #111827 0%, #000000 100%);
+  background: radial-gradient(circle at center, rgba(30,15,0,0.95) 0%, rgba(10,5,0,0.98) 100%);
   z-index: 9999;
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 20px;
-  backdrop-filter: blur(15px);
-  perspective: 2000px; /* Perspective here keeps the flip stable */
+  backdrop-filter: blur(5px);
+  perspective: 2000px;
 }
 
-/* --- THE NEON "X" BUTTON --- */
 .close-study-btn {
   position: absolute;
   top: 20px;
   right: 20px;
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid var(--accent-red);
-  color: var(--accent-red);
+  background: transparent;
+  border: 2px solid var(--border-dark);
+  color: var(--border-dark);
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -466,17 +413,11 @@ textarea.form-input {
   cursor: pointer;
   z-index: 10001;
   transition: all 0.3s ease;
-  box-shadow:
-    0 0 10px rgba(239, 68, 68, 0.3),
-    inset 0 0 5px rgba(239, 68, 68, 0.2);
 }
 
 .close-study-btn:hover {
-  background: var(--accent-red);
-  color: white;
-  box-shadow:
-    0 0 20px var(--accent-red),
-    0 0 40px var(--accent-red);
+  border-color: var(--primary);
+  color: var(--primary);
   transform: rotate(90deg);
 }
 
@@ -489,12 +430,11 @@ textarea.form-input {
   gap: 24px;
 }
 
-/* --- THE STABLE PIVOT CARD --- */
 .flashcard-scene {
   width: 100%;
-  height: 500px; /* Fixed height is mandatory */
+  height: 500px;
   cursor: pointer;
-  max-width: 100%; /* Prevents overflow */
+  max-width: 100%;
 }
 
 .flashcard-inner {
@@ -503,7 +443,7 @@ textarea.form-input {
   height: 100%;
   transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
   transform-style: preserve-3d;
-  display: grid; /* Forces faces to stack perfectly */
+  display: grid;
 }
 
 .flashcard-inner.is-flipped {
@@ -511,140 +451,91 @@ textarea.form-input {
 }
 
 .card-face {
-  grid-area: 1 / 1; /* Both faces sit in the exact same grid spot */
+  grid-area: 1 / 1;
   width: 100%;
   height: 100%;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  border-radius: 32px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 25px; /* Reduced slightly for mobile comfort */
-  box-sizing: border-box; /* Essential so padding doesn't push the card out */
+  border-radius: 4px;
+  border: 1px solid var(--border-dark);
+  padding: 25px;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   background: var(--bg-card);
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
-  box-sizing: border-box;
+  box-shadow: inset 0 0 40px rgba(0,0,0,0.8), 8px 8px 0px #000;
+}
+
+.card-face::before {
+  content: '';
+  position: absolute;
+  inset: 10px;
+  border: 1px solid var(--border);
+  pointer-events: none;
 }
 
 .card-face-back {
   transform: rotateY(180deg);
-  display: flex;
-  flex-direction: column;
-  /* Centering logic */
   justify-content: center;
-  align-items: center;
-  box-sizing: border-box;
   padding: 30px;
   gap: 20px;
 }
 
-/* --- TYPOGRAPHY --- */
 .card-face-front h2 {
-  font-size: 2.8rem;
-  font-weight: 800;
+  font-size: 3rem;
   text-align: center;
   margin: 0;
-}
-
-.card-face-back h2 {
-  font-size: 1.5rem;
-  margin-bottom: 10px;
-}
-/* Create a scrollable area for the AI reply */
-.ai-content-scroll {
-  flex: 1; /* Takes up all available space */
-  width: 100%;
-  overflow-y: auto; /* Makes the chat reply scrollable */
-  padding-right: 8px; /* Room for scrollbar */
-  margin-bottom: 10px;
-
-  /* Hide scrollbar for Chrome/Safari but keep functionality */
-  scrollbar-width: thin;
-  scrollbar-color: var(--primary) transparent;
-}
-
-.ai-content-scroll::-webkit-scrollbar {
-  width: 4px;
-}
-
-.ai-content-scroll::-webkit-scrollbar-thumb {
-  background: var(--primary);
-  border-radius: 10px;
-}
-/* AI Feedback Box Styling */
-.ai-feedback-box {
-  background: rgba(99, 102, 241, 0.05);
-  border-left: 3px solid var(--primary);
-  padding: 15px;
-  border-radius: 0 12px 12px 0;
-  font-size: 0.95rem;
-  line-height: 1.6;
   color: var(--text-main);
 }
 
-/* --- MOBILE TWEAKS --- */
-@media (max-width: 480px) {
-  .flashcard-scene {
-    height: 70vh; /* More room for AI text on mobile */
-  }
+.card-face-back h2 {
+  font-size: 1.8rem;
+  margin-bottom: 10px;
+  color: var(--primary);
+}
 
-  .close-study-btn {
-    top: 15px;
-    right: 15px;
-    width: 35px;
-    height: 35px;
-  }
+.ai-feedback-box {
+  background: var(--bg-input);
+  border-left: 4px solid var(--primary);
+  padding: 15px;
+  font-size: 1rem;
+  font-style: italic;
+  color: var(--text-main);
+  box-shadow: inset 2px 2px 10px rgba(0,0,0,0.5);
 }
 
 .practice-container {
-  /* MAGIC: This centers the container vertically */
   margin-top: auto;
   margin-bottom: auto;
-
   width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center; /* This centers the children horizontally */
+  align-items: center;
   gap: 12px;
   z-index: 5;
-  border: none;
-  box-sizing: border-box; /* Prevents padding from pushing it wide */
-}
-.check-ai-btn {
-  width: 100%;
-  margin-top: 12px;
-  padding: 12px;
-  background: var(--primary);
-  color: white;
-  font-weight: 700;
-  border-radius: 12px;
-  border: none;
-  cursor: pointer;
+  box-sizing: border-box;
 }
 
 .progress-text {
-  color: var(--text-muted);
+  color: var(--border-dark);
+  font-family: "Cinzel", serif;
   font-weight: 800;
-  font-size: 0.9rem;
-  letter-spacing: 1px;
+  font-size: 1rem;
+  letter-spacing: 2px;
 }
 
 .practice-input {
   width: 100%;
-  text-align: center; /* Centers the typing text inside the bar */
-  background: var(--bg-input);
-  border: 1px solid var(--border);
+  text-align: center;
+  background: #000;
+  border: 1px solid var(--border-dark);
   padding: 14px;
-  border-radius: 12px;
-  color: white;
-  font-size: 1rem;
-}
-
-.practice-input:focus {
-  border-color: var(--primary);
+  border-radius: 2px;
+  color: var(--text-main);
+  font-size: 1.1rem;
+  font-family: "EB Garamond", serif;
 }
 
 .neon-sparkle-btn {
@@ -653,62 +544,24 @@ textarea.form-input {
   gap: 8px;
   padding: 0 20px;
   height: 45px;
-  background: rgba(99, 102, 241, 0.1); /* Subtle transparent primary */
-  border: 2px solid var(--primary);
-  color: white;
-  border-radius: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--primary);
+  color: var(--primary);
+  border-radius: 2px;
+  font-family: "Cinzel", serif;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s ease;
   text-transform: uppercase;
   letter-spacing: 1px;
   font-size: 0.8rem;
   position: relative;
-  overflow: hidden;
-  /* Neon Glow */
-  box-shadow:
-    0 0 10px rgba(99, 102, 241, 0.2),
-    inset 0 0 5px rgba(99, 102, 241, 0.1);
 }
 
 .neon-sparkle-btn:hover:not(:disabled) {
   background: var(--primary);
-  color: white;
-  transform: translateY(-2px);
-  /* Intense Glow on Hover */
-  box-shadow:
-    0 0 20px rgba(99, 102, 241, 0.6),
-    0 0 40px rgba(99, 102, 241, 0.2);
-}
-
-.neon-sparkle-btn:active {
-  transform: translateY(0);
-}
-
-.neon-sparkle-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  filter: grayscale(1);
-}
-
-.sparkle-icon {
-  filter: drop-shadow(0 0 5px #fff);
-  animation: sparkle-pulse 2s infinite;
-}
-
-@keyframes sparkle-pulse {
-  0% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.2);
-    opacity: 0.7;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
+  color: #0a0806;
+  box-shadow: 2px 2px 0px #000;
 }
 
 .check-ai-btn {
@@ -716,10 +569,11 @@ textarea.form-input {
   margin-top: 12px;
   padding: 12px;
   background: var(--primary);
-  color: white;
+  color: #0a0806;
+  font-family: "Cinzel", serif;
   font-weight: 700;
-  border-radius: 12px;
-  border: none;
+  border-radius: 2px;
+  border: 1px solid var(--primary-hover);
   cursor: pointer;
 }
 
@@ -733,92 +587,30 @@ textarea.form-input {
 .srs-buttons button {
   flex: 1;
   padding: 18px;
-  border-radius: 20px;
+  border-radius: 2px;
+  font-family: "Cinzel", serif;
   font-weight: 800;
   text-transform: uppercase;
-  border: none;
+  border: 1px solid var(--border-dark);
   cursor: pointer;
-  transition:
-    transform 0.2s,
-    background 0.2s;
+  transition: all 0.2s;
+  box-shadow: 2px 2px 0px #000;
 }
 
 .srs-buttons button:active {
-  transform: scale(0.95);
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }
 
 .hard-btn {
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid var(--accent-red) !important;
+  background: var(--bg-input);
   color: var(--accent-red);
 }
 
 .easy-btn {
   background: var(--primary);
-  color: white;
-  box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
-}
-
-/* --- MOBILE RESPONSIVE --- */
-@media (max-width: 480px) {
-  .study-overlay-container {
-    padding: 15px;
-  }
-
-  .flashcard-scene {
-    height: 65vh; /* Responsive height for mobile */
-    min-height: 400px;
-  }
-
-  .card-face-front h2 {
-    font-size: 2rem;
-  }
-
-  .srs-buttons {
-    position: fixed;
-    bottom: 30px;
-    width: calc(100% - 30px);
-  }
-
-  .study-overlay-content {
-    height: 100%;
-    justify-content: center;
-    padding-bottom: 100px; /* Space for fixed buttons */
-  }
-}
-
-/* --- MOBILE RESPONSIVE --- */
-@media (max-width: 600px) {
-  .header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .header-actions {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .search-container {
-    margin-bottom: 35px; /* Space below search bar on mobile */
-  }
-
-  .search-input {
-    font-size: 0.95rem;
-    padding: 14px 14px 14px 45px;
-  }
-
-  .flashcard-scene {
-    height: 480px;
-  }
-
-  .srs-buttons {
-    position: fixed;
-    bottom: 20px;
-    width: calc(100% - 40px);
-    display: flex;
-    gap: 10px;
-  }
+  color: #0a0806;
+  border-color: var(--primary-hover);
 }
 
 /* --- SENTENCE ARCHIVE LAYOUT --- */
@@ -831,35 +623,29 @@ textarea.form-input {
 
 .sentence-card {
   background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 24px;
+  border: 1px solid var(--border-dark);
+  border-radius: 4px;
   padding: 30px;
   position: relative;
   transition: transform 0.2s ease;
-}
-
-.sentence-card:hover {
-  transform: scale(1.01);
-  border-color: var(--primary);
+  box-shadow: 4px 4px 0px #000;
 }
 
 .sentence-card::before {
   content: "";
   position: absolute;
   left: 0;
-  top: 20%;
-  bottom: 20%;
+  top: 10%;
+  bottom: 10%;
   width: 4px;
   background: var(--primary);
-  border-radius: 0 4px 4px 0;
 }
 
 .main-sentence-text {
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: white;
+  font-size: 1.5rem;
   margin-bottom: 12px;
   display: block;
+  color: var(--text-main);
 }
 
 /* Container Logic */
@@ -877,99 +663,32 @@ textarea.form-input {
   gap: 12px;
 }
 
-/* Toggle Group Styling */
 .view-toggle-group {
   display: flex;
-  background: var(--bg-card);
+  background: var(--bg-input);
   padding: 4px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
+  border-radius: 2px;
+  border: 1px solid var(--border-dark);
 }
 
 .toggle-btn {
   padding: 8px 16px;
   border: none;
-  border-radius: 8px;
+  border-radius: 2px;
   cursor: pointer;
+  font-family: "Cinzel", serif;
   font-size: 0.85rem;
-  font-weight: 500;
-  transition: 0.2s;
+  font-weight: 600;
   background: transparent;
   color: var(--text-muted);
 }
 
 .toggle-btn.active {
   background: var(--primary);
-  color: white;
+  color: #0a0806;
 }
 
-/* Button Base Styles */
-.add-btn-main,
-.study-now-btn {
-  white-space: nowrap;
-  padding: 10px 18px;
-  border-radius: 10px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-}
-
-.add-btn-main {
-  background: var(--bg-input);
-  border: 1px solid var(--primary);
-  color: var(--primary);
-}
-
-.study-now-btn {
-  background: var(--primary);
-  color: white;
-  border: none;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
-}
-
-/* --- MOBILE RESPONSIVENESS --- */
-@media (max-width: 768px) {
-  .header-content {
-    flex-direction: column; /* Stack Title and Buttons */
-    align-items: flex-start;
-    gap: 15px;
-  }
-
-  .action-row {
-    width: 100%;
-    justify-content: flex-start;
-    overflow-x: auto; /* Allows horizontal scrolling if buttons are too wide */
-    padding-bottom: 5px;
-    gap: 8px;
-  }
-
-  .toggle-btn,
-  .add-btn-main,
-  .study-now-btn {
-    padding: 8px 12px; /* Slightly smaller for mobile */
-    font-size: 0.8rem;
-  }
-}
-
-.sentence-card {
-  transition:
-    transform 0.2s ease,
-    border-color 0.2s ease;
-}
-
-.sentence-card:hover {
-  border-color: var(--primary) !important;
-  transform: translateY(-2px);
-}
-
-.variation-tag {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
+/* --- COACH CHAT (EPISTOLARY FORMAT) --- */
 .coach-page {
   height: 100vh;
   display: flex;
@@ -978,6 +697,8 @@ textarea.form-input {
   max-width: 800px;
   margin: 0 auto;
   position: relative;
+  border-left: 1px solid var(--border);
+  border-right: 1px solid var(--border);
 }
 
 .coach-header {
@@ -985,20 +706,8 @@ textarea.form-input {
   display: flex;
   align-items: center;
   gap: 15px;
-  border-bottom: 1px solid var(--border);
-}
-
-.coach-info h3 {
-  margin: 0;
-  font-size: 1.1rem;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.coach-info span {
-  font-size: 0.75rem;
-  color: var(--text-muted);
+  border-bottom: 2px solid var(--border-dark);
+  background: var(--bg-card);
 }
 
 .chat-window {
@@ -1008,141 +717,111 @@ textarea.form-input {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  scrollbar-width: none; /* Hide scrollbar Firefox */
+  scrollbar-width: none;
 }
-
-.chat-window::-webkit-scrollbar {
-  display: none;
-} /* Hide scrollbar Chrome */
 
 .msg-wrapper {
   display: flex;
   width: 100%;
-  animation: slideIn 0.3s ease-out;
-}
-
-.msg-wrapper.user {
-  justify-content: flex-end;
-}
-.msg-wrapper.assistant {
-  justify-content: flex-start;
 }
 
 .msg-bubble {
   max-width: 80%;
-  padding: 14px 18px;
-  font-size: 0.95rem;
-  line-height: 1.5;
-  border-radius: 18px;
+  padding: 16px 20px;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  border-radius: 2px;
+  box-shadow: 2px 2px 0px #000;
 }
 
 .msg-bubble.user {
-  background: var(--primary);
-  color: white;
-  border-bottom-right-radius: 4px;
-  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+  background: #3e1b04; /* Very dark burnt orange/brown */
+  color: var(--text-main);
+  border: 1px solid var(--primary);
 }
 
 .msg-bubble.assistant {
   background: var(--bg-card);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-dark);
   color: var(--text-main);
-  border-bottom-left-radius: 4px;
-}
-
-/* Typing Animation */
-.typing span {
-  height: 8px;
-  width: 8px;
-  background: var(--primary);
-  display: inline-block;
-  border-radius: 50%;
-  margin: 0 2px;
-  opacity: 0.4;
-  animation: blink 1s infinite;
-}
-.typing span:nth-child(2) {
-  animation-delay: 0.2s;
-}
-.typing span:nth-child(3) {
-  animation-delay: 0.4s;
-}
-
-@keyframes blink {
-  0%,
-  100% {
-    opacity: 0.4;
-    transform: translateY(0);
-  }
-  50% {
-    opacity: 1;
-    transform: translateY(-3px);
-  }
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 .chat-input-wrapper {
   padding: 20px;
-  background: linear-gradient(transparent, var(--bg-main));
+  background: var(--bg-card);
+  border-top: 2px solid var(--border-dark);
 }
 
 .input-glass-container {
   display: flex;
   align-items: center;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--border);
+  background: var(--bg-input);
+  border: 1px solid var(--border-dark);
   padding: 8px 8px 8px 20px;
-  border-radius: 30px;
-  backdrop-filter: blur(10px);
-  transition: border-color 0.3s;
-}
-
-.input-glass-container:focus-within {
-  border-color: var(--primary);
+  border-radius: 2px;
 }
 
 .coach-input {
   flex: 1;
   background: transparent;
   border: none;
-  color: white;
+  color: var(--text-main);
+  font-family: "EB Garamond", serif;
+  font-size: 1.1rem;
   outline: none;
-  font-size: 0.95rem;
+}
+
+/* --- MAIN ADD BUTTON (+ Word / + Sentence) --- */
+.add-btn-main {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: var(--bg-card);
+  border: 1px solid var(--primary);
+  color: var(--primary);
+  text-decoration: none; /* Removes the default link underline */
+  font-family: "Cinzel", serif;
+  font-size: 0.9rem;
+  font-weight: 800;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 2px 2px 0px #000; /* Hard retro shadow */
+  letter-spacing: 1px;
+}
+
+.add-btn-main:hover {
+  background: var(--primary);
+  color: #0a0806; /* Dark text on hover */
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0px #000;
+}
+
+.add-btn-main:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }
 
 .send-btn {
   background: var(--primary);
-  color: white;
+  color: #0a0806;
   border: none;
   width: 40px;
   height: 40px;
-  border-radius: 50%;
+  border-radius: 2px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: transform 0.2s;
-}
-
-.send-btn:hover {
-  transform: scale(1.05);
 }
 
 .back-btn {
-  background: none;
-  border: 1px solid var(--border);
+  background: var(--bg-input);
+  border: 1px solid var(--border-dark);
   color: var(--text-main);
-  border-radius: 50%;
+  border-radius: 2px;
   width: 35px;
   height: 35px;
   display: flex;
@@ -1151,40 +830,9 @@ textarea.form-input {
   cursor: pointer;
 }
 
-/* Ensure buttons align icons and text nicely */
-.action-row button,
-.action-row a {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-/* Mobile Icon-Only Mode */
 @media (max-width: 600px) {
-  .action-row {
-    gap: 8px;
-    justify-content: space-between;
-  }
-
-  .action-row span {
-    display: none; /* Hides the text labels */
-  }
-
   .action-row button,
   .action-row a {
-    padding: 0;
-    width: 45px; /* Makes them perfectly square/circular icons */
-    height: 45px;
-    min-width: 45px;
-    border-radius: 12px;
-  }
-
-  .view-toggle-group {
-    gap: 4px;
-  }
-
-  .neon-sparkle-btn.coach-mobile-fix {
-    padding: 0 !important; /* Overrides inline styles */
+    border-radius: 2px;
   }
 }

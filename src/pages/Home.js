@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import api from '../api';
-import { checkSentence } from '../aiService';
+import { checkSentence, getWordExamples } from '../aiService';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import StudyMode from './StudyMode';
 import { 
@@ -55,9 +55,19 @@ function SentenceCard({ sentence, inlineInputStyle, fetchSentences, deleteSenten
   );
 }
 
-function WordCard({ word, onStartReview, speak, deleteWord, inlineInputStyle, fetchWords }) {
+function WordCard({ word, speak, deleteWord, inlineInputStyle, fetchWords }) {
+  const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({ word: word.word, meaning: word.meaning, difficulty: word.difficulty });
+  
+  // Initialize AI data from the database if we already saved it previously!
+  const [aiData, setAiData] = useState(
+    word.vibe_one_liner ? {
+      oneLiner: word.vibe_one_liner,
+      examples: word.vibe_examples ? JSON.parse(word.vibe_examples) : []
+    } : null
+  );
+  const [isLoadingAi, setIsLoadingAi] = useState(false);
 
   const handleUpdate = async () => {
     try {
@@ -69,12 +79,27 @@ function WordCard({ word, onStartReview, speak, deleteWord, inlineInputStyle, fe
     }
   };
 
-  const handlePractice = () => {
-    onStartReview(word);
+  const handleVibeCheck = async () => {
+    setIsLoadingAi(true);
+    try {
+      const data = await getWordExamples(word.word);
+      setAiData(data); // Show it in the UI instantly
+      
+      // Save it to the database so it's there forever
+      await api.put(`/${word.id}`, {
+        vibe_one_liner: data.oneLiner,
+        vibe_examples: data.examples
+      });
+      fetchWords(); // Update the main list in the background
+    } catch (err) {
+      alert("Failed to load vibe check. Please try again.");
+    } finally {
+      setIsLoadingAi(false);
+    }
   };
 
   return (
-    <div className="word-card" style={{ border: isEditing ? '1px solid var(--primary)' : '1px solid var(--border)' }}>
+    <div className="word-card" style={{ border: isEditing ? '1px solid var(--primary)' : '1px solid var(--border)', background: 'var(--bg-card)' }}>
       {isEditing ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '10px' }}>
           <input style={inlineInputStyle} value={editData.word} onChange={e => setEditData({...editData, word: e.target.value})} />
@@ -88,9 +113,10 @@ function WordCard({ word, onStartReview, speak, deleteWord, inlineInputStyle, fe
         <>
           <div className="card-header">
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              {/* Clicking the word now opens the full view */}
               <h2 
-                onClick={handlePractice}
-                style={{ cursor: 'pointer', color: 'var(--primary)', textDecoration: 'none' }}
+                onClick={() => navigate(`/word/${word.id}`)}
+                style={{ color: 'var(--primary)', margin: 0, cursor: 'pointer' }}
                 className="word-title-hover"
               >
                 {word.word}
@@ -99,19 +125,42 @@ function WordCard({ word, onStartReview, speak, deleteWord, inlineInputStyle, fe
             </div>
             <span className={`difficulty-badge ${word.difficulty}`}>{word.difficulty}</span>
           </div>
+          
           <div className="card-body">
-            <p className="meaning-text"><strong>Def:</strong> {word.meaning}</p>
+            <p className="meaning-text" style={{ marginBottom: '10px' }}><strong>Def:</strong> {word.meaning}</p>
+            
+            {aiData && (
+              <div style={{ background: 'var(--bg-input)', padding: '12px', borderRadius: '8px', borderLeft: '3px solid var(--primary)', marginTop: '15px' }}>
+                <p style={{ margin: '0 0 10px 0', fontSize: '0.9rem', color: 'var(--primary)' }}>
+                  <strong>The Vibe:</strong> {aiData.oneLiner}
+                </p>
+                <ul style={{ margin: 0, paddingLeft: '20px', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.85rem', opacity: 0.9 }}>
+                  {aiData.examples.map((ex, idx) => (
+                    <li key={idx}>{ex}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
+
           <div className="card-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '12px' }}>
               <button onClick={() => setIsEditing(true)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '0.8rem' }}>Edit</button>
               
-              <button 
-                onClick={handlePractice}
-                style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '4px' }}
-              >
-                <Sparkles size={14} /> Practice
-              </button>
+              {!aiData && (
+                <button 
+                  onClick={handleVibeCheck}
+                  disabled={isLoadingAi}
+                  style={{ 
+                    background: 'none', border: 'none', color: 'var(--primary)', 
+                    cursor: isLoadingAi ? 'wait' : 'pointer', fontSize: '0.8rem', 
+                    fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '4px',
+                    opacity: isLoadingAi ? 0.6 : 1
+                  }}
+                >
+                  <Sparkles size={14} /> {isLoadingAi ? "Loading..." : "Vibe Check"}
+                </button>
+              )}
             </div>
             <button onClick={() => deleteWord(word.id)} className="delete-btn"><Trash2 size={18} /></button>
           </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import api from '../api';
-import { ChevronLeft, Search, X, Volume2, Edit2, Trash2, ArrowUpDown, EyeOff, Eye } from 'lucide-react';
+import { getWordExamples } from '../aiService'; // <-- Added this!
+import { ChevronLeft, Search, X, Volume2, Edit2, Trash2, ArrowUpDown, EyeOff, Eye, Sparkles, ExternalLink } from 'lucide-react'; // <-- Added Sparkles and ExternalLink
 import { useNavigate } from 'react-router-dom';
 
 /* ─────────────────────────────────────────────────────
@@ -30,7 +31,7 @@ const loadSRS = () => {
 };
 
 /* ─────────────────────────────────────────────────────
-   WORD CARD — Now with Quick Review & Progress Bars
+   WORD CARD — Now with Vibe Check & New Window Linking
 ───────────────────────────────────────────────────── */
 function WordCard({ word, srsEntry, onDelete, onEdit, globalHideMeaning }) {
   const level    = srsEntry?.level ?? 0;
@@ -39,8 +40,16 @@ function WordCard({ word, srsEntry, onDelete, onEdit, globalHideMeaning }) {
   const bg       = SRS_BG[level];
   const isMaster = level >= 5;
 
-  // Local state to override the global hide for just this card
   const [localReveal, setLocalReveal] = useState(false);
+  
+  // Vibe Check States
+  const [aiData, setAiData] = useState(
+    word.vibe_one_liner ? {
+      oneLiner: word.vibe_one_liner,
+      examples: word.vibe_examples ? JSON.parse(word.vibe_examples) : []
+    } : null
+  );
+  const [isLoadingAi, setIsLoadingAi] = useState(false);
 
   // Reset local reveal if global toggle changes
   useEffect(() => {
@@ -48,11 +57,35 @@ function WordCard({ word, srsEntry, onDelete, onEdit, globalHideMeaning }) {
   }, [globalHideMeaning]);
 
   const playAudio = (e) => {
-    e.stopPropagation(); // Prevent card tap if hiding meanings
+    e.stopPropagation(); 
     if ('speechSynthesis' in window) {
       const utterance = new SpeechSynthesisUtterance(word.word);
       window.speechSynthesis.speak(utterance);
     }
+  };
+
+  const handleVibeCheck = async (e) => {
+    e.stopPropagation(); // Don't trigger the hide/reveal card tap
+    setIsLoadingAi(true);
+    try {
+      const data = await getWordExamples(word.word);
+      setAiData(data);
+      // Save it to the database silently in the background
+      await api.put(`/${word.id}`, {
+        vibe_one_liner: data.oneLiner,
+        vibe_examples: data.examples
+      });
+    } catch (err) {
+      alert("Failed to load vibe check.");
+    } finally {
+      setIsLoadingAi(false);
+    }
+  };
+
+  const openFullView = (e) => {
+    e.stopPropagation();
+    // Opens the WordDetail view in a new browser tab/window
+    window.open(`/word/${word.id}`, '_blank');
   };
 
   const isHidden = globalHideMeaning && !localReveal;
@@ -75,12 +108,18 @@ function WordCard({ word, srsEntry, onDelete, onEdit, globalHideMeaning }) {
       {/* Row 1: Word + Audio + SRS progress */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '10px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: '800', letterSpacing: '-0.3px' }}>
+          {/* Clicking the word opens the detailed view in a new window */}
+          <h3 
+            onClick={openFullView}
+            style={{ margin: 0, fontSize: '1.25rem', fontWeight: '800', letterSpacing: '-0.3px', color: 'var(--primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
+            title="Open in new window"
+          >
             {word.word}
+            <ExternalLink size={14} style={{ opacity: 0.5 }} />
           </h3>
           <button 
             onClick={playAudio}
-            style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center' }}
+            style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center' }}
             title="Listen"
           >
             <Volume2 size={18} />
@@ -104,7 +143,7 @@ function WordCard({ word, srsEntry, onDelete, onEdit, globalHideMeaning }) {
         </div>
       </div>
 
-      {/* Row 2: Meaning / Hidden State */}
+      {/* Row 2: Meaning / AI Vibe Check / Hidden State */}
       {isHidden ? (
         <div style={{
           background: 'rgba(255,255,255,0.03)', border: '1px dashed var(--border)',
@@ -118,9 +157,36 @@ function WordCard({ word, srsEntry, onDelete, onEdit, globalHideMeaning }) {
           <p style={{ margin: 0, fontSize: '0.95rem', lineHeight: '1.55', color: 'rgba(255,255,255,0.85)', animation: 'fadeIn 0.3s' }}>
             {word.meaning}
           </p>
-          {word.example_sentence && (
+          
+          {/* AI Vibe Check Display */}
+          {aiData ? (
+            <div style={{ marginTop: '5px', background: 'rgba(99,102,241,0.08)', padding: '12px', borderRadius: '8px', borderLeft: '2px solid var(--primary)', animation: 'fadeIn 0.3s' }}>
+              <p style={{ margin: '0 0 8px 0', fontSize: '0.85rem', color: 'var(--primary)', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <Sparkles size={14} /> {aiData.oneLiner}
+              </p>
+              <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '0.8rem', color: 'rgba(255,255,255,0.7)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                {aiData.examples.map((ex, i) => <li key={i}>{ex}</li>)}
+              </ul>
+            </div>
+          ) : (
+            /* Generate Button if no Vibe Check exists yet */
+            <button 
+              onClick={handleVibeCheck}
+              disabled={isLoadingAi}
+              style={{
+                background: 'none', border: '1px solid var(--primary)', color: 'var(--primary)',
+                padding: '6px 12px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: '600',
+                cursor: isLoadingAi ? 'wait' : 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px',
+                alignSelf: 'flex-start', marginTop: '5px', opacity: isLoadingAi ? 0.6 : 1, animation: 'fadeIn 0.3s'
+              }}
+            >
+              <Sparkles size={12} /> {isLoadingAi ? "Consulting AI..." : "Generate Vibe Check"}
+            </button>
+          )}
+
+          {word.example_sentence && !aiData && (
             <p style={{
-              margin: 0, fontSize: '0.85rem', lineHeight: '1.5', color: 'rgba(255,255,255,0.4)',
+              margin: '5px 0 0 0', fontSize: '0.85rem', lineHeight: '1.5', color: 'rgba(255,255,255,0.4)',
               fontStyle: 'italic', borderLeft: '2px solid var(--border)', paddingLeft: '10px', animation: 'fadeIn 0.3s'
             }}>
               {word.example_sentence}
@@ -163,7 +229,7 @@ export default function VocabBrowser() {
   const [error, setError]       = useState(false);
   const [query, setQuery]       = useState('');
   const [sortBy, setSortBy]     = useState('alpha');
-  const [hideAll, setHideAll]   = useState(false); // Global Quick Review Toggle
+  const [hideAll, setHideAll]   = useState(false); 
   const [srs, setSrs]           = useState({});
   const navigate                = useNavigate();
 
@@ -185,13 +251,14 @@ export default function VocabBrowser() {
 
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this word?")) {
-      // api.delete(`/words/${id}`).then(() => fetchWords());
-      setWords(words.filter(w => w.id !== id));
+      api.delete(`/${id}`).then(() => fetchWords()).catch(() => alert('Delete failed'));
+      // Note: Updated to api.delete(`/${id}`) to match your backend standard!
     }
   };
 
   const handleEdit = (word) => {
     console.log("Edit word:", word);
+    // You could also redirect to /word/:id to edit in the full view!
   };
 
   const filteredAndSorted = useMemo(() => {
